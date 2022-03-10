@@ -1,5 +1,6 @@
 import { createApp } from "vue";
-import { Quasar } from "quasar";
+import { Quasar, Dialog, Notify } from "quasar";
+
 // import quasarLang from "quasar/lang/zh-CN";
 
 // Import icon libraries
@@ -14,14 +15,15 @@ import "quasar/src/css/index.sass";
 // Assumes your root component is App.vue
 // and placed in same folder as main.js
 import App from "./App.vue";
-import router from "./router/index";
+import router from "./router";
+import store from "./store";
 
 const myApp = createApp(App);
 
 myApp.use(Quasar, {
-  plugins: ["Dialog", "Notify"], // import Quasar plugins and add here
+  plugins: [Dialog, Notify], // import Quasar plugins and add here
   // lang: quasarLang,
 });
 
 // Assumes you have a <div id="app"></div> in your index.html
-myApp.use(router).mount("#app");
+myApp.use(store).use(router).mount("#app");

@@ -1,127 +1,30 @@
 <template>
-  <q-layout view="hHh lpR fFf">
-    <q-header>
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
-
-        <q-toolbar-title>Zinc Search</q-toolbar-title>
-
-        <div>
-          <q-btn-dropdown outline rounded no-caps icon-right="manage_accounts">
-            <template #label>
-              <div class="row items-center no-wrap">admin</div>
-            </template>
-            <q-list>
-              <q-item-label header>Account</q-item-label>
-
-              <q-item v-ripple v-close-popup clickable @click="signout">
-                <q-item-section avatar>
-                  <q-avatar
-                    size="md"
-                    icon="exit_to_app"
-                    color="red"
-                    text-color="white"
-                  />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>Sign Out</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
-        </div>
-      </q-toolbar>
-    </q-header>
-
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      :width="200"
-      :breakpoint="500"
-      bordered
-      class="bg-grey-3"
-    >
-      <q-list>
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer>
-
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-  </q-layout>
+  <router-view></router-view>
 </template>
 
 <script>
-import EssentialLink from "./components/EssentialLink.vue";
-
-const linksList = [
-  {
-    title: "Search",
-    icon: "manage_search",
-    link: "/search",
-  },
-  {
-    title: "Index",
-    icon: "list",
-    link: "/index",
-  },
-  {
-    title: "User",
-    icon: "people",
-    link: "/user",
-  },
-  {
-    title: "About",
-    icon: "info",
-    link: "/about",
-  },
-];
-
-import { ref } from "vue";
 import { useStore } from "vuex";
-import router from "./router";
+import { useRouter } from "vue-router";
 
 export default {
-  name: "LayoutDefault",
-
-  components: {
-    EssentialLink,
-  },
-
   setup() {
-    const leftDrawerOpen = ref(false);
-
     const store = useStore();
-
-    function signout() {
-      store.dispatch("logout");
-      localStorage.setItem("_id", "");
-      localStorage.setItem("base64encoded", "");
-      localStorage.setItem("name", "");
-      localStorage.setItem("role", "");
-      router.push("/login");
+    if (window.location.origin != "http://localhost:8080") {
+      store.dispatch(
+        "endpoint",
+        window.location.origin +
+          window.location.pathname.split("/").slice(0, -2).join("/") +
+          "/"
+      );
     }
 
-    return {
-      essentialLinks: linksList,
-      leftDrawerOpen,
-      toggleLeftDrawer() {
-        leftDrawerOpen.value = !leftDrawerOpen.value;
-      },
-      signout,
-    };
+    const router = useRouter();
+    const creds = localStorage.getItem("creds");
+    if (creds) {
+      const credsInfo = JSON.parse(creds);
+      store.dispatch("login", credsInfo);
+      router.push("/search");
+    }
   },
 };
 </script>
