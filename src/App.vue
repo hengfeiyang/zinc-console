@@ -2,21 +2,33 @@
   <q-layout view="hHh lpR fFf">
     <q-header>
       <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+        <q-btn
+          flat
+          dense
+          round
+          icon="menu"
+          aria-label="Menu"
+          @click="toggleLeftDrawer"
+        />
 
         <q-toolbar-title>Zinc Search</q-toolbar-title>
 
         <div>
           <q-btn-dropdown outline rounded no-caps icon-right="manage_accounts">
-            <template v-slot:label>
+            <template #label>
               <div class="row items-center no-wrap">admin</div>
             </template>
             <q-list>
               <q-item-label header>Account</q-item-label>
 
-              <q-item clickable v-ripple v-close-popup @click="signout">
+              <q-item v-ripple v-close-popup clickable @click="signout">
                 <q-item-section avatar>
-                  <q-avatar size="md" icon="exit_to_app" color="red" text-color="white" />
+                  <q-avatar
+                    size="md"
+                    icon="exit_to_app"
+                    color="red"
+                    text-color="white"
+                  />
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>Sign Out</q-item-label>
@@ -37,7 +49,11 @@
       class="bg-grey-3"
     >
       <q-list>
-        <EssentialLink v-for="link in essentialLinks" :key="link.title" v-bind="link" />
+        <EssentialLink
+          v-for="link in essentialLinks"
+          :key="link.title"
+          v-bind="link"
+        />
       </q-list>
     </q-drawer>
 
@@ -48,7 +64,7 @@
 </template>
 
 <script>
-import EssentialLink from "components/EssentialLink.vue";
+import EssentialLink from "./components/EssentialLink.vue";
 
 const linksList = [
   {
@@ -70,15 +86,15 @@ const linksList = [
     title: "About",
     icon: "info",
     link: "/about",
-  }
+  },
 ];
 
-import { defineComponent, ref } from "vue";
+import { ref } from "vue";
 import { useStore } from "vuex";
 import router from "./router";
 
-export default defineComponent({
-  name: "MainLayout",
+export default {
+  name: "LayoutDefault",
 
   components: {
     EssentialLink,
@@ -89,7 +105,7 @@ export default defineComponent({
 
     const store = useStore();
 
-    function signout () {
+    function signout() {
       store.dispatch("logout");
       localStorage.setItem("_id", "");
       localStorage.setItem("base64encoded", "");
@@ -97,8 +113,6 @@ export default defineComponent({
       localStorage.setItem("role", "");
       router.push("/login");
     }
-
-    
 
     return {
       essentialLinks: linksList,
@@ -109,5 +123,5 @@ export default defineComponent({
       signout,
     };
   },
-});
+};
 </script>
