@@ -1,6 +1,6 @@
 import { createApp } from "vue";
 import { Quasar } from "quasar";
-import quasarLang from "quasar/lang/zh-CN";
+// import quasarLang from "quasar/lang/zh-CN";
 
 // Import icon libraries
 import "@quasar/extras/roboto-font/roboto-font.css";
@@ -20,7 +20,7 @@ const myApp = createApp(App);
 
 myApp.use(Quasar, {
   plugins: ["Dialog", "Notify"], // import Quasar plugins and add here
-  lang: quasarLang,
+  // lang: quasarLang,
 });
 
 // Assumes you have a <div id="app"></div> in your index.html

@@ -12,7 +12,9 @@ const routes = [
   {
     path: "/",
     name: "home",
-    component: Search,
+    redirect: (to) => {
+      return { path: "/search", query: { q: to.params.searchText } };
+    },
   },
   {
     path: "/search",
@@ -44,12 +46,6 @@ const routes = [
     name: "login",
     component: Login,
   },
-  // Always leave this as last one,
-  // but you can also remove it
-  {
-    path: "/:catchAll(.*)*",
-    component: () => import("../views/Error404.vue"),
-  },
 ];
 
 const router = createRouter({
@@ -57,14 +53,14 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  var isAuthenticated = store.state.user.isLoggedIn;
+// router.beforeEach((to, from, next) => {
+//   var isAuthenticated = store.state.user.isLoggedIn;
 
-  if (to.path !== "/login" && !isAuthenticated) {
-    next({ path: "/login" });
-  } else {
-    next();
-  }
-});
+//   if (to.path !== "/login" && !isAuthenticated) {
+//     next({ path: "/login" });
+//   } else {
+//     next();
+//   }
+// });
 
 export default router;
