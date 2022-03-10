@@ -49,7 +49,7 @@
       class="bg-grey-3"
     >
       <q-list>
-        <EssentialLink
+        <menu-link
           v-for="link in essentialLinks"
           :key="link.title"
           v-bind="link"
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import EssentialLink from "../components/EssentialLink.vue";
+import MenuLink from "../components/MenuLink.vue";
 
 const linksList = [
   {
@@ -102,7 +102,7 @@ export default {
   name: "MainLayout",
 
   components: {
-    EssentialLink,
+    MenuLink,
   },
 
   setup() {

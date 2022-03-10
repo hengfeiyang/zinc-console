@@ -73,7 +73,7 @@
 
       <q-btn
         class="add-button form-field q-mb-md"
-        color="secondary"
+        color="primary"
         type="submit"
       >
         <q-icon name="add" />

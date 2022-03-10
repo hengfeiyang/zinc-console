@@ -56,7 +56,7 @@
   </q-btn>
 </template>
 
-<style scoped>
+<style lang="scss">
 .syntax-guide {
   /* width: 80%; */
   margin-right: 10px;
@@ -71,7 +71,7 @@
 
 .syntax-guide-title {
   /* font-family: "Roboto Mono", Consolas, Menlo, Courier, monospace; */
-  width: 600px;
+  width: 500px;
   font-size: 20px;
   background-color: rgb(207, 203, 203);
 }

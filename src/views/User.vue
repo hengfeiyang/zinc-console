@@ -22,7 +22,7 @@
             <q-icon name="search" class="cursor-pointer" />
           </template>
         </q-input>
-        <q-btn class="add-button q-ml-sm" color="secondary" @click="addUser">
+        <q-btn class="add-button q-ml-sm" color="primary" @click="addUser">
           <q-icon name="add" />
           Add User
         </q-btn>
