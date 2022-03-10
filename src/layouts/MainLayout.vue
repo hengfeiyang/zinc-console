@@ -78,6 +78,11 @@ const linksList = [
     link: "/index",
   },
   {
+    title: "Template",
+    icon: "apps",
+    link: "/template",
+  },
+  {
     title: "User",
     icon: "people",
     link: "/user",
