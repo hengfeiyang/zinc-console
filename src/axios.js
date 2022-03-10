@@ -35,12 +35,11 @@ var http = {
     return instance.put(url, formData);
   },
   delete: async function (url) {
-    // var creds = await Auth.currentAuthenticatedUser()
-    // const idToken = creds.signInUserSession.idToken.jwtToken
+    const base64encoded = store.state.user.base64encoded;
 
     const instance = axios.create({
       // timeout: 10000,
-      //   headers: { 'Authorization': 'Bearer ' + idToken }
+      headers: { Authorization: "Basic " + base64encoded },
     });
 
     return instance.delete(url);
