@@ -11,20 +11,24 @@ import { ref } from "vue";
 
 export default {
   props: {
+    modelValue: {
+      type: [String, Number, Object, Array],
+      default: () => ({}),
+    },
+    mode: {
+      type: String,
+      default: "code",
+    },
     name: {
       type: String,
-      default: "",
+      default: "jsonEditor",
     },
     height: {
       type: Number,
       default: 200,
     },
-    modelValue: {
-      type: [String, Number, Object, Array],
-      default: () => ({}),
-    },
   },
-  emits: ["error", "validationError", "updated"],
+  emits: ["update:modelValue", "error", "validationError"],
   data() {
     return {
       errorMessage: ref(""),
@@ -51,11 +55,12 @@ export default {
   },
   methods: {
     init() {
+      console.log("init", this.name, this.mode);
       this.jsonEditor = new JSONEditor(
         this.$el.querySelector(".json-editor"),
         {
           name: this.name,
-          mode: "code",
+          mode: this.mode,
           indentation: 2,
           mainMenuBar: false,
           statusBar: false,
@@ -72,7 +77,7 @@ export default {
           },
           onChange: () => {
             this.internalChange = true;
-            this.$emit("updated", this.jsonEditor.getText());
+            this.$emit("update:modelValue", this.jsonEditor.getText());
             // prevent infinite loop
             this.$nextTick(() => {
               this.internalChange = false;
@@ -103,14 +108,21 @@ export default {
     background: rgba(0, 0, 0, 0.05);
   }
 }
-.ace_gutter {
-  display: none;
-}
-.ace-jsoneditor .ace_marker-layer .ace_active-line {
+.jsoneditor-preview {
   background: rgba(0, 0, 0, 0.05);
+  min-height: v-bind(minHeight);
 }
 .ace-jsoneditor,
 textarea.jsoneditor-text {
   min-height: v-bind(minHeight);
+}
+.ace-jsoneditor .ace_marker-layer .ace_active-line {
+  background: rgba(0, 0, 0, 0.05);
+}
+.ace_gutter {
+  display: none;
+}
+.ace_scroller {
+  left: 0 !important;
 }
 </style>

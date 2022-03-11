@@ -86,27 +86,29 @@
 import { defineComponent, ref } from "vue";
 import axios from "../axios";
 
+const defaultValue = {
+  _id: "",
+  name: "",
+  role: "",
+  password: "",
+  confirmPassword: "",
+};
+
 export default defineComponent({
   name: "ComponentAddUpdateUser",
   props: {
-    user: {
+    modelValue: {
       type: Object,
-      default: null,
+      default: () => defaultValue,
     },
   },
-  emits: ["added", "updated"],
+  emits: ["update:modelValue", "updated"],
   setup() {
     const beingUpdated = ref(false);
     const roles = ref(["admin", "user"]);
     const addUserForm = ref(null);
     const disableColor = ref("");
-    const userData = ref({
-      _id: "",
-      name: "",
-      role: "",
-      password: "",
-      confirmPassword: "",
-    });
+    const userData = ref(defaultValue);
 
     return {
       disableColor,
@@ -118,13 +120,13 @@ export default defineComponent({
     };
   },
   created() {
-    if (this.user && this.user.id) {
+    if (this.modelValue && this.modelValue.id) {
       this.beingUpdated = true;
       this.disableColor = "grey-5";
       this.userData = {
-        _id: this.user.id,
-        name: this.user.name,
-        role: this.user.role,
+        _id: this.modelValue.id,
+        name: this.modelValue.name,
+        role: this.modelValue.role,
         password: "",
         confirmPassword: "",
       };
@@ -169,10 +171,10 @@ export default defineComponent({
     onSubmit() {
       this.addUserForm.validate().then((valid) => {
         if (!valid) {
-          console.log("Form is invalid");
+          // console.log("Form is invalid");
           return false;
         }
-        console.log("Form is valid");
+        // console.log("Form is valid");
         axios
           .put(this.$store.state.API_ENDPOINT + "api/user", this.userData)
           .then((response) => {
@@ -185,11 +187,8 @@ export default defineComponent({
               role: "",
             };
 
-            if (this.beingUpdated) {
-              this.$emit("updated", data);
-            } else {
-              this.$emit("added", data);
-            }
+            this.$emit("update:modelValue", data);
+            this.$emit("updated", data);
             this.addUserForm.resetValidation();
           });
       });

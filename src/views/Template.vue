@@ -83,7 +83,7 @@
       seamless
       maximized
     >
-      <add-update-template @added="templateAdded" />
+      <add-update-template @updated="templateAdded" />
     </q-dialog>
   </q-page>
 </template>

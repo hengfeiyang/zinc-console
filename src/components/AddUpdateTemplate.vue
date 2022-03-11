@@ -15,7 +15,7 @@
     <q-card-section class="col q-pt-none q-w-p50">
       <q-stepper ref="stepper" v-model="step" color="primary" flat animated>
         <q-step :name="1" title="Logistics" icon="info" :done="step > 1">
-          <q-form ref="step1Form">
+          <q-form ref="step1Form" @submit="onSubmitStep1">
             <q-input
               v-model="templateData.name"
               borderless
@@ -23,8 +23,9 @@
               :readonly="beingUpdated"
               :disabled="beingUpdated"
               :bg-color="disableColor"
+              :rules="[validateTemplateName]"
               label="Template Name"
-              class="q-py-sm"
+              class="q-py-md"
             />
             <q-select
               v-model="templateData.index_patterns"
@@ -35,23 +36,17 @@
               use-chips
               multiple
               hide-dropdown-icon
-              input-debounce="0"
               new-value-mode="add-unique"
-              class="q-py-sm"
-            />
-            <q-input
-              v-model="templateData.name"
-              borderless
-              filled
-              label="Index Patterns"
-              class="q-py-sm"
+              :rules="[validateTemplateIndexPatterns]"
+              class="q-py-md"
             />
             <q-input
               v-model="templateData.priority"
               borderless
               filled
               label="Priority (optional)"
-              class="q-py-sm"
+              :rules="[validateTemplatePriority]"
+              class="q-py-md"
             />
           </q-form>
         </q-step>
@@ -64,31 +59,50 @@
         >
           <q-form ref="step2Form">
             <json-editor
-              v-model="json"
+              v-model="templateData.template.settings"
               name="settings"
-              :height="288"
+              :height="352"
               @validation-error="onJsonError"
               @updated="onJsonUpdated"
             ></json-editor>
           </q-form>
+          <p class="text-grey">
+            Use JSON format:
+            <strong
+              class="bg-grey-2 text-purple-6 q-px-sm"
+              style="font-weight: normal"
+              >{{ placeholderIndexSettings }}</strong
+            >
+          </p>
         </q-step>
 
         <q-step :name="3" title="Mappings" icon="assignment" :done="step > 3">
           <q-form ref="step3Form">
             <json-editor
-              v-model="json"
+              v-model="templateData.template.mappings"
               name="mappings"
-              :height="288"
+              :height="352"
+              @validation-error="onJsonError"
+              @updated="onJsonUpdated"
             ></json-editor>
           </q-form>
+          <p class="text-grey">
+            Use JSON format:
+            <strong
+              class="bg-grey-2 text-purple-6 q-px-sm"
+              style="font-weight: normal"
+              >{{ placeholderMappings }}</strong
+            >
+          </p>
         </q-step>
 
         <q-step :name="4" title="Review" icon="preview">
           <q-form ref="step4Form">
             <json-editor
-              v-model="json"
-              name="review"
-              :height="288"
+              v-model="templateData.template"
+              name="preview"
+              mode="preview"
+              :height="360"
             ></json-editor>
           </q-form>
         </q-step>
@@ -121,31 +135,35 @@
 import { defineComponent, ref } from "vue";
 import JsonEditor from "../components/JsonEditor.vue";
 
+const defaultValue = {
+  name: "",
+  index_patterns: [],
+  priority: "",
+  template: {
+    settings: {},
+    mappings: {},
+  },
+};
+
 export default defineComponent({
   name: "ComponentAddUpdateTemplate",
   components: {
     JsonEditor,
   },
   props: {
-    user: {
+    modelValue: {
       type: Object,
-      default: null,
+      default: () => defaultValue,
     },
   },
-  emits: ["added", "updated"],
+  emits: ["update:modelValue", "updated"],
   setup() {
     const beingUpdated = ref(false);
     const roles = ref(["admin", "user"]);
-    const addUserForm = ref(null);
+    const step1Form = ref(null);
     const disableColor = ref("");
     const disableBtn = ref(false);
-    const templateData = ref({
-      _id: "",
-      name: "",
-      role: "",
-      password: "",
-      confirmPassword: "",
-    });
+    const templateData = ref(defaultValue);
 
     return {
       step: ref(1),
@@ -163,19 +181,14 @@ export default defineComponent({
       placeholderMappings: ref(`{
   "properties": {
     "content": {
-      "type": "text",
-      "index": true,
-      "store": false,
-      "sortable": false,
-      "aggregatable": false,
-      "highlightable": false
+      "type": "text"
     }
   }
 }`),
       beingUpdated,
       roles,
       templateData,
-      addUserForm,
+      step1Form,
       json: ref(""),
       onJsonError(error) {
         if (error && error.length > 0) {
@@ -196,49 +209,68 @@ export default defineComponent({
       this.beingUpdated = true;
       this.disableColor = "grey-5";
       this.templateData = {
-        _id: this.user.id,
-        name: this.user.name,
-        role: this.user.role,
-        password: "",
-        confirmPassword: "",
+        name: val.name,
+        index_patterns: val.index_patterns,
+        priority: val.priority,
+        template: {
+          settings: val.template.settings,
+          mappings: val.template.mappings,
+        },
       };
     }
   },
   methods: {
-    nextStep() {
-      if (this.step == 4) {
-        console.log("save");
-        this.$emit("added", {});
-      } else {
-        this.$refs.stepper.next();
+    validateTemplateName(val) {
+      if (val && val.length > 0) {
+        this.disableBtn = false;
+        return true;
       }
+      return "Template name is required";
     },
-    onSubmit() {
-      this.addUserForm.validate().then((valid) => {
+    validateTemplateIndexPatterns(val) {
+      if (val && val.length > 0) {
+        this.disableBtn = false;
+        return true;
+      }
+      return "Index patterns are required";
+    },
+    validateTemplatePriority(val) {
+      if (val && val.length > 0) {
+        this.templateData.priority = parseInt(val, 10);
+      }
+      return true;
+    },
+    nextStep() {
+      if (this.step === 1) {
+        this.onSubmitStep1();
+        return false;
+      } else if (this.step === 2) {
+        // ss
+      } else if (this.step === 3) {
+        // ss
+      } else if (this.step === 4) {
+        // ss
+      }
+
+      if (this.step < 4) {
+        this.$refs.stepper.next();
+        return;
+      }
+      console.log("save", this.templateData);
+      this.$emit("update:modelValue", this.templateData);
+      this.$emit("updated", this.templateData);
+    },
+    onSubmitStep1() {
+      this.step1Form.validate().then((valid) => {
         if (!valid) {
           console.log("Form is invalid");
+          this.disableBtn = true;
           return false;
         }
         console.log("Form is valid");
-        axios
-          .put(this.$store.state.API_ENDPOINT + "api/user", this.templateData)
-          .then((response) => {
-            var data = response.data;
-            this.templateData = {
-              _id: "",
-              name: "",
-              password: "",
-              confirmPassword: "",
-              role: "",
-            };
-
-            if (this.beingUpdated) {
-              this.$emit("updated", data);
-            } else {
-              this.$emit("added", data);
-            }
-            this.addUserForm.resetValidation();
-          });
+        console.log(this.templateData);
+        this.$refs.stepper.next();
+        return true;
       });
     },
   },

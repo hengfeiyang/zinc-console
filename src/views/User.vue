@@ -59,11 +59,11 @@
     </q-table>
 
     <q-dialog v-model="showAddUserDialog">
-      <add-update-user @added="userAdded" />
+      <add-update-user @updated="userAdded" />
     </q-dialog>
 
     <q-dialog v-model="showUpdateUserDialog">
-      <add-update-user :user="user" @updated="userUpdated" />
+      <add-update-user v-model="user" @updated="userUpdated" />
     </q-dialog>
   </q-page>
 </template>
