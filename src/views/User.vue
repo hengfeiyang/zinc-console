@@ -6,7 +6,7 @@
       row-key="id"
       :pagination="pagination"
       :filter="filterQuery"
-      :filter-method="filterUser"
+      :filter-method="filterData"
     >
       <template #top-right>
         <q-input
@@ -14,18 +14,19 @@
           filled
           borderless
           dense
-          debounce="1"
           placeholder="Search user"
-          class="search-user"
         >
           <template #append>
             <q-icon name="search" class="cursor-pointer" />
           </template>
         </q-input>
-        <q-btn class="add-button q-ml-sm" color="primary" @click="addUser">
-          <q-icon name="add" />
-          Add User
-        </q-btn>
+        <q-btn
+          class="add-button q-ml-sm"
+          color="primary"
+          icon="add"
+          label="Add User"
+          @click="addUser"
+        />
       </template>
 
       <template v-slot:body-cell-#="props">
@@ -33,24 +34,22 @@
           {{ props.value }}
         </q-td>
       </template>
-
-      <template #header-cell-operation>
-        <q-th></q-th>
-      </template>
-      <template #body-cell-operation="props">
+      <template #body-cell-actions="props">
         <q-td :props="props" auto-width>
           <q-btn
             dense
+            unelevated
             size="sm"
-            color="secondary"
+            color="teal-5"
             class="action-button"
             icon="edit"
             @click="editUser(props)"
           />
           <q-btn
             dense
+            unelevated
             size="sm"
-            color="negative"
+            color="red-5"
             class="action-button q-ml-sm"
             icon="delete"
             @click="deleteUser(props)"
@@ -59,26 +58,12 @@
       </template>
     </q-table>
 
-    <q-dialog v-model="showUserAddDialog">
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">Add User</div>
-        </q-card-section>
-        <q-card-section class="user-dialog">
-          <add-update-user @userAdded="userAdded" />
-        </q-card-section>
-      </q-card>
+    <q-dialog v-model="showAddUserDialog">
+      <add-update-user @added="userAdded" />
     </q-dialog>
 
-    <q-dialog v-model="showUserUpdateDialog">
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">Update User</div>
-        </q-card-section>
-        <q-card-section class="user-dialog">
-          <add-update-user :user="user" @userUpdated="userUpdated" />
-        </q-card-section>
-      </q-card>
+    <q-dialog v-model="showUpdateUserDialog">
+      <add-update-user :user="user" @updated="userUpdated" />
     </q-dialog>
   </q-page>
 </template>
@@ -86,7 +71,7 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
-import { useQuasar } from "quasar";
+import { useQuasar, date } from "quasar";
 import axios from "../axios";
 
 import AddUpdateUser from "../components/AddUpdateUser.vue";
@@ -112,9 +97,15 @@ export default defineComponent({
             id: data._source._id,
             name: data._source.name || data._source._id,
             role: data._source.role,
-            Created: data._source.created_at,
-            Updated: data._source["@timestamp"],
-            operation: "",
+            created: date.formatDate(
+              data._source.created_at,
+              "YYYY-MM-DDTHH:mm:ssZ"
+            ),
+            updated: date.formatDate(
+              data._source["@timestamp"],
+              "YYYY-MM-DDTHH:mm:ssZ"
+            ),
+            actions: "",
           };
         });
       });
@@ -123,11 +114,11 @@ export default defineComponent({
     getUsers();
 
     const user = ref({});
-    const showUserAddDialog = ref(false);
-    const showUserUpdateDialog = ref(false);
+    const showAddUserDialog = ref(false);
+    const showUpdateUserDialog = ref(false);
 
     const addUser = () => {
-      showUserAddDialog.value = true;
+      showAddUserDialog.value = true;
     };
     const editUser = (props) => {
       user.value = {
@@ -135,15 +126,15 @@ export default defineComponent({
         name: props.row.name,
         role: props.row.role,
       };
-      showUserUpdateDialog.value = true;
+      showUpdateUserDialog.value = true;
     };
     const deleteUser = (props) => {
       $q.dialog({
         title: "Confirm User Delete",
         message:
-          "Do you want to delete user " +
+          "Do you want to delete user [" +
           props.row.id +
-          "?" +
+          "] ?" +
           " This action cannot be undone.",
         cancel: true,
         persistent: true,
@@ -158,15 +149,15 @@ export default defineComponent({
 
     return {
       user,
-      showUserAddDialog,
-      showUserUpdateDialog,
+      showAddUserDialog,
+      showUpdateUserDialog,
       users,
       getUsers,
       pagination: {
         rowsPerPage: 20,
       },
       filterQuery: ref(""),
-      filterUser(rows, terms) {
+      filterData(rows, terms) {
         var filtered = [];
         terms = terms.toLowerCase();
         for (var i = 0; i < rows.length; i++) {
@@ -180,20 +171,14 @@ export default defineComponent({
       editUser,
       deleteUser,
       userAdded() {
-        showUserAddDialog.value = false;
+        showAddUserDialog.value = false;
         getUsers();
       },
       userUpdated() {
-        showUserUpdateDialog.value = false;
+        showUpdateUserDialog.value = false;
         getUsers();
       },
     };
   },
 });
 </script>
-
-<style lanng="scss">
-.user-dialog {
-  width: 400px;
-}
-</style>

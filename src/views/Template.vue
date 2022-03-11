@@ -1,13 +1,187 @@
 <template>
-  <q-page class="q-pa-lg">
-    <h5 class="q-mt-none">template</h5>
+  <q-page class="q-pa-md">
+    <q-table
+      title="Templates"
+      :rows="templates"
+      row-key="id"
+      :pagination="pagination"
+      :filter="filterQuery"
+      :filter-method="filterData"
+    >
+      <template #top-right>
+        <q-input
+          v-model="filterQuery"
+          filled
+          borderless
+          dense
+          placeholder="Search template"
+        >
+          <template #append>
+            <q-icon name="search" class="cursor-pointer" />
+          </template>
+        </q-input>
+        <q-btn class="add-button q-ml-sm" color="primary" @click="addTemplate">
+          <q-icon name="add" />
+          Add Template
+        </q-btn>
+      </template>
+
+      <template v-slot:body-cell-#="props">
+        <q-td :props="props" width="80">
+          {{ props.value }}
+        </q-td>
+      </template>
+      <template #body-cell-content="props">
+        <q-td :props="props" auto-width="">
+          <q-badge v-if="props.value.mappings">
+            M <q-tooltip class="bg-black">Mappings</q-tooltip>
+          </q-badge>
+          <q-badge v-if="props.value.settings" class="q-ml-xs">
+            S <q-tooltip class="bg-black">Settings</q-tooltip>
+          </q-badge>
+          <q-badge
+            v-if="props.value.settings == null && props.value.mappings == null"
+            color="transparent"
+            text-color="black"
+            class="q-pl-none"
+          >
+            None
+          </q-badge>
+        </q-td>
+      </template>
+      <template #body-cell-actions="props">
+        <q-td :props="props" auto-width>
+          <q-btn
+            dense
+            unelevated
+            size="sm"
+            color="teal-5"
+            class="action-button"
+            icon="edit"
+            @click="editTemplate(props)"
+          />
+          <q-btn
+            dense
+            unelevated
+            size="sm"
+            color="red-5"
+            class="action-button q-ml-sm"
+            icon="delete"
+            @click="deleteTemplate(props)"
+          />
+        </q-td>
+      </template>
+    </q-table>
+
+    <q-dialog
+      v-model="showAddTemplateDialog"
+      position="right"
+      full-height
+      seamless
+      maximized
+    >
+      <add-update-template @added="templateAdded" />
+    </q-dialog>
   </q-page>
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
+import { useStore } from "vuex";
+import { useQuasar, date } from "quasar";
+import axios from "../axios";
+
+import AddUpdateTemplate from "../components/AddUpdateTemplate.vue";
 
 export default defineComponent({
   name: "PageTemplate",
+
+  components: {
+    AddUpdateTemplate,
+  },
+
+  setup() {
+    const store = useStore();
+    const $q = useQuasar();
+
+    const templates = ref([]);
+    const getTemplates = () => {
+      axios
+        .get(store.state.API_ENDPOINT + "es/_index_template")
+        .then((response) => {
+          var counter = 1;
+          templates.value = response.data.map((data) => {
+            return {
+              "#": counter++,
+              name: data.name,
+              patterns: data.index_template.index_patterns.join(", "),
+              priority: data.index_template.priority,
+              content: data.index_template.template,
+              updated: date.formatDate(
+                data["@timestamp"],
+                "YYYY-MM-DDTHH:mm:ssZ"
+              ),
+              actions: "",
+            };
+          });
+        });
+    };
+
+    getTemplates();
+
+    const template = ref({});
+    const showAddTemplateDialog = ref(false);
+
+    const addTemplate = () => {
+      showAddTemplateDialog.value = true;
+    };
+    const deleteTemplate = (props) => {
+      $q.dialog({
+        title: "Confirm Template Delete",
+        message:
+          "Do you want to delete Template [" +
+          props.row.id +
+          "] ?" +
+          " This action cannot be undone.",
+        cancel: true,
+        persistent: true,
+      }).onOk(() => {
+        axios
+          .delete(
+            store.state.API_ENDPOINT + "es/_index_template/" + props.row.id
+          )
+          .then(() => {
+            getTemplates();
+          });
+      });
+    };
+
+    return {
+      template,
+      showAddTemplateDialog,
+      templates,
+      getTemplates,
+      pagination: {
+        rowsPerPage: 20,
+      },
+      filterQuery: ref(""),
+      filterData(rows, terms) {
+        var filtered = [];
+        terms = terms.toLowerCase();
+        for (var i = 0; i < rows.length; i++) {
+          if (rows[i]["name"].toLowerCase().includes(terms)) {
+            filtered.push(rows[i]);
+          }
+        }
+        return filtered;
+      },
+      addTemplate,
+      deleteTemplate,
+      templateAdded() {
+        showAddTemplateDialog.value = false;
+        getTemplates();
+      },
+    };
+  },
 });
 </script>

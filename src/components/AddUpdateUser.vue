@@ -1,87 +1,85 @@
 <template>
-  <div class="user-from">
-    <q-form ref="addUserForm" @submit="onSubmit">
-      <q-input
-        v-model="userData._id"
-        dense
-        borderless
-        filled
-        :readonly="beingUpdated"
-        :disabled="beingUpdated"
-        :bg-color="uidbgColor"
-        type="text"
-        label="User ID"
-        class="form-field"
-        :rules="[validateUserID]"
-      />
-      <q-input
-        v-model="userData.name"
-        dense
-        borderless
-        filled
-        type="text"
-        label="User Name"
-        class="form-field"
-        :rules="[validateUserName]"
-      />
-      <q-select
-        v-model="userData.role"
-        :options="roles"
-        dense
-        borderless
-        filled
-        label="Role"
-        class="form-field"
-        :rules="[validateUserRole]"
-      />
-      <q-input
-        v-model="userData.password"
-        borderless
-        dense
-        filled
-        :type="isPwd ? 'password' : 'text'"
-        label="Password"
-        class="form-field"
-        :rules="[validatePassword]"
-      >
-        <template #append>
-          <q-icon
-            :name="isPwd ? 'visibility_off' : 'visibility'"
-            class="cursor-pointer"
-            @click="isPwd = !isPwd"
-          />
-        </template>
-      </q-input>
-      <q-input
-        v-model="userData.confirmPassword"
-        borderless
-        dense
-        filled
-        :type="isPwd ? 'password' : 'text'"
-        label="Reconfirm Password"
-        class="form-field"
-        :rules="[validateConfirmPassword]"
-      >
-        <template #append>
-          <q-icon
-            :name="isPwd ? 'visibility_off' : 'visibility'"
-            class="cursor-pointer"
-            @click="isPwd = !isPwd"
-          />
-        </template>
-      </q-input>
+  <q-card>
+    <q-card-section>
+      <div v-if="beingUpdated" class="text-h6">Update User</div>
+      <div v-else class="text-h6">Add User</div>
+    </q-card-section>
+    <q-card-section class="q-w-md">
+      <q-form ref="addUserForm" @submit="onSubmit">
+        <q-input
+          v-model="userData._id"
+          dense
+          borderless
+          filled
+          :readonly="beingUpdated"
+          :disabled="beingUpdated"
+          :bg-color="disableColor"
+          label="User ID"
+          :rules="[validateUserID]"
+        />
+        <q-input
+          v-model="userData.name"
+          dense
+          borderless
+          filled
+          label="User Name"
+          :rules="[validateUserName]"
+        />
+        <q-select
+          v-model="userData.role"
+          :options="roles"
+          dense
+          borderless
+          filled
+          label="Role"
+          :rules="[validateUserRole]"
+        />
+        <q-input
+          v-model="userData.password"
+          borderless
+          dense
+          filled
+          :type="isPwd ? 'password' : 'text'"
+          label="Password"
+          :rules="[validatePassword]"
+        >
+          <template #append>
+            <q-icon
+              :name="isPwd ? 'visibility_off' : 'visibility'"
+              class="cursor-pointer"
+              @click="isPwd = !isPwd"
+            />
+          </template>
+        </q-input>
+        <q-input
+          v-model="userData.confirmPassword"
+          borderless
+          dense
+          filled
+          :type="isPwd ? 'password' : 'text'"
+          label="Reconfirm Password"
+          :rules="[validateConfirmPassword]"
+        >
+          <template #append>
+            <q-icon
+              :name="isPwd ? 'visibility_off' : 'visibility'"
+              class="cursor-pointer"
+              @click="isPwd = !isPwd"
+            />
+          </template>
+        </q-input>
 
-      <q-btn
-        class="add-button form-field q-mb-md"
-        color="primary"
-        type="submit"
-      >
-        <q-icon name="add" />
-        <span v-if="beingUpdated">Update User</span>
-        <span v-else>Add User</span>
-      </q-btn>
-    </q-form>
-  </div>
+        <q-btn
+          no-caps
+          class="q-mb-md"
+          color="primary"
+          type="submit"
+          icon="add"
+          label="Save User"
+        />
+      </q-form>
+    </q-card-section>
+  </q-card>
 </template>
 
 <script>
@@ -89,18 +87,19 @@ import { defineComponent, ref } from "vue";
 import axios from "../axios";
 
 export default defineComponent({
+  name: "ComponentAddUpdateUser",
   props: {
     user: {
       type: Object,
       default: null,
     },
   },
-  emits: ["userAdded", "userUpdated"],
+  emits: ["added", "updated"],
   setup() {
     const beingUpdated = ref(false);
     const roles = ref(["admin", "user"]);
     const addUserForm = ref(null);
-    const uidbgColor = ref("");
+    const disableColor = ref("");
     const userData = ref({
       _id: "",
       name: "",
@@ -110,7 +109,7 @@ export default defineComponent({
     });
 
     return {
-      uidbgColor,
+      disableColor,
       isPwd: ref(true),
       beingUpdated,
       roles,
@@ -121,7 +120,7 @@ export default defineComponent({
   created() {
     if (this.user && this.user.id) {
       this.beingUpdated = true;
-      this.uidbgColor = "grey-5";
+      this.disableColor = "grey-5";
       this.userData = {
         _id: this.user.id,
         name: this.user.name,
@@ -187,11 +186,10 @@ export default defineComponent({
             };
 
             if (this.beingUpdated) {
-              this.$emit("userUpdated", data);
+              this.$emit("updated", data);
             } else {
-              this.$emit("userAdded", data);
+              this.$emit("added", data);
             }
-            this.$emit("userAdded", data);
             this.addUserForm.resetValidation();
           });
       });
