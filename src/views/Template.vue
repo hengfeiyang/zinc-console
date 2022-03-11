@@ -20,10 +20,13 @@
             <q-icon name="search" class="cursor-pointer" />
           </template>
         </q-input>
-        <q-btn class="add-button q-ml-sm" color="primary" @click="addTemplate">
-          <q-icon name="add" />
-          Add Template
-        </q-btn>
+        <q-btn
+          class="q-ml-sm"
+          color="primary"
+          icon="add"
+          label="Add template"
+          @click="addTemplate"
+        />
       </template>
 
       <template v-slot:body-cell-#="props">
@@ -95,11 +98,9 @@ import AddUpdateTemplate from "../components/AddUpdateTemplate.vue";
 
 export default defineComponent({
   name: "PageTemplate",
-
   components: {
     AddUpdateTemplate,
   },
-
   setup() {
     const store = useStore();
     const $q = useQuasar();
@@ -137,14 +138,14 @@ export default defineComponent({
     };
     const deleteTemplate = (props) => {
       $q.dialog({
-        title: "Confirm Template Delete",
+        title: "Delete template",
         message:
-          "Do you want to delete Template [" +
-          props.row.id +
-          "] ?" +
-          " This action cannot be undone.",
+          "You are about to delete this template: <ul><li>" +
+          props.row.name +
+          "</li></ul>",
         cancel: true,
         persistent: true,
+        html: true,
       }).onOk(() => {
         axios
           .delete(
@@ -160,7 +161,6 @@ export default defineComponent({
       template,
       showAddTemplateDialog,
       templates,
-      getTemplates,
       pagination: {
         rowsPerPage: 20,
       },

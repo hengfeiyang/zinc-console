@@ -1,8 +1,8 @@
 <template>
   <q-card>
     <q-card-section>
-      <div v-if="beingUpdated" class="text-h6">Update User</div>
-      <div v-else class="text-h6">Add User</div>
+      <div v-if="beingUpdated" class="text-h6">Update user</div>
+      <div v-else class="text-h6">Add user</div>
     </q-card-section>
     <q-card-section class="q-w-md">
       <q-form ref="addUserForm" @submit="onSubmit">

@@ -21,7 +21,7 @@
           </template>
         </q-input>
         <q-btn
-          class="add-button q-ml-sm"
+          class="q-ml-sm"
           color="primary"
           icon="add"
           label="Add User"
@@ -78,11 +78,9 @@ import AddUpdateUser from "../components/AddUpdateUser.vue";
 
 export default defineComponent({
   name: "PageUser",
-
   components: {
     AddUpdateUser,
   },
-
   setup() {
     const store = useStore();
     const $q = useQuasar();
@@ -130,14 +128,14 @@ export default defineComponent({
     };
     const deleteUser = (props) => {
       $q.dialog({
-        title: "Confirm User Delete",
+        title: "Delete user",
         message:
-          "Do you want to delete user [" +
+          "You are about to delete this user: <ul><li>" +
           props.row.id +
-          "] ?" +
-          " This action cannot be undone.",
+          "</li></ul>",
         cancel: true,
         persistent: true,
+        html: true,
       }).onOk(() => {
         axios
           .delete(store.state.API_ENDPOINT + "api/user/" + props.row.id)
@@ -152,7 +150,6 @@ export default defineComponent({
       showAddUserDialog,
       showUpdateUserDialog,
       users,
-      getUsers,
       pagination: {
         rowsPerPage: 20,
       },

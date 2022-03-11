@@ -3,7 +3,7 @@
     <q-card-section>
       <div class="row items-center no-wrap">
         <div class="col">
-          <div class="text-h6">Add Template</div>
+          <div class="text-h6">Add template</div>
         </div>
 
         <div class="col-auto">
@@ -22,7 +22,7 @@
               filled
               :readonly="beingUpdated"
               :disabled="beingUpdated"
-              :bg-color="uidbgColor"
+              :bg-color="disableColor"
               label="Template Name"
               class="q-py-sm"
             />
@@ -63,48 +63,33 @@
           :done="step > 2"
         >
           <q-form ref="step2Form">
-            <q-input
-              v-model="templateData.settings"
-              borderless
-              filled
-              autogrow
-              type="textarea"
-              label="Index Settings"
-              :placeholder="placeholderIndexSettings"
-              class="q-py-sm"
-              input-style="min-height: 244px"
-            />
+            <json-editor
+              v-model="json"
+              name="settings"
+              :height="288"
+              @validation-error="onJsonError"
+              @updated="onJsonUpdated"
+            ></json-editor>
           </q-form>
         </q-step>
 
         <q-step :name="3" title="Mappings" icon="assignment" :done="step > 3">
           <q-form ref="step3Form">
-            <q-input
-              v-model="templateData.mappings"
-              borderless
-              filled
-              autogrow
-              type="textarea"
-              label="Mappings"
-              :placeholder="placeholderMappings"
-              class="q-py-sm"
-              input-style="min-height: 244px"
-            />
+            <json-editor
+              v-model="json"
+              name="mappings"
+              :height="288"
+            ></json-editor>
           </q-form>
         </q-step>
 
         <q-step :name="4" title="Review" icon="preview">
           <q-form ref="step4Form">
-            <q-input
-              v-model="templateData.preview"
-              borderless
-              filled
-              autogrow
-              type="textarea"
-              label="Review Template"
-              class="q-py-sm"
-              input-style="min-height: 244px"
-            />
+            <json-editor
+              v-model="json"
+              name="review"
+              :height="288"
+            ></json-editor>
           </q-form>
         </q-step>
 
@@ -112,6 +97,7 @@
           <q-stepper-navigation>
             <q-btn
               color="primary"
+              :disable="disableBtn"
               :label="step === 4 ? 'Save Template' : 'Continue'"
               @click="nextStep"
             />
@@ -119,6 +105,7 @@
               v-if="step > 1"
               flat
               color="primary"
+              :disable="disableBtn"
               label="Back"
               class="q-ml-sm"
               @click="$refs.stepper.previous()"
@@ -132,9 +119,13 @@
 
 <script>
 import { defineComponent, ref } from "vue";
+import JsonEditor from "../components/JsonEditor.vue";
 
 export default defineComponent({
   name: "ComponentAddUpdateTemplate",
+  components: {
+    JsonEditor,
+  },
   props: {
     user: {
       type: Object,
@@ -147,6 +138,7 @@ export default defineComponent({
     const roles = ref(["admin", "user"]);
     const addUserForm = ref(null);
     const disableColor = ref("");
+    const disableBtn = ref(false);
     const templateData = ref({
       _id: "",
       name: "",
@@ -158,6 +150,7 @@ export default defineComponent({
     return {
       step: ref(1),
       disableColor,
+      disableBtn,
       placeholderIndexSettings: ref(`{
   "analysis": {
     "analyzer": {
@@ -183,6 +176,19 @@ export default defineComponent({
       roles,
       templateData,
       addUserForm,
+      json: ref(""),
+      onJsonError(error) {
+        if (error && error.length > 0) {
+          console.log("error", error);
+          disableBtn.value = true;
+        } else {
+          disableBtn.value = false;
+        }
+      },
+      onJsonUpdated(json) {
+        console.log("update", json);
+        templateData.value.settings = json;
+      },
     };
   },
   created() {
