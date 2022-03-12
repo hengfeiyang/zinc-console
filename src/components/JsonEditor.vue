@@ -27,6 +27,10 @@ export default {
       type: Number,
       default: 300,
     },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["update:modelValue", "error", "validationError"],
   data() {
@@ -43,9 +47,9 @@ export default {
   },
   watch: {
     modelValue: {
-      handler(json) {
+      handler(newValue) {
         if (!this.internalChange) {
-          this.setValue(json);
+          this.setValue(newValue);
         }
       },
     },
@@ -77,6 +81,12 @@ export default {
               this.errorMessage = "";
             }
             this.$emit("validationError", err);
+          },
+          onEditable: (node) => {
+            if (this.readonly) {
+              return false;
+            }
+            return true;
           },
           onChange: () => {
             try {

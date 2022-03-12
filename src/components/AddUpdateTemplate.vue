@@ -99,8 +99,9 @@
             <json-editor
               v-model="templateData"
               name="preview"
-              mode="preview"
-              :height="488"
+              mode="code"
+              :readonly="true"
+              :height="501"
             ></json-editor>
           </q-form>
         </q-step>
@@ -198,8 +199,10 @@ export default defineComponent({
       }
       this.templateData.name = this.modelValue.name;
       this.templateData.priority = this.modelValue.priority;
-      this.templateData.template.settings = this.modelValue.template.settings;
-      this.templateData.template.mappings = this.modelValue.template.mappings;
+      this.templateData.template.settings =
+        this.modelValue.template.settings || {};
+      this.templateData.template.mappings =
+        this.modelValue.template.mappings || {};
     }
   },
   methods: {
