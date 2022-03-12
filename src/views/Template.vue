@@ -34,7 +34,7 @@
           {{ props.value }}
         </q-td>
       </template>
-      <template #body-cell-content="props">
+      <template #body-cell-template="props">
         <q-td :props="props" auto-width="">
           <q-badge v-if="props.value.mappings">
             M <q-tooltip class="bg-black">Mappings</q-tooltip>
@@ -85,6 +85,16 @@
     >
       <add-update-template @updated="templateAdded" />
     </q-dialog>
+
+    <q-dialog
+      v-model="showUpdateTemplateDialog"
+      position="right"
+      full-height
+      seamless
+      maximized
+    >
+      <add-update-template v-model="template" @updated="templateUpdated" />
+    </q-dialog>
   </q-page>
 </template>
 
@@ -116,8 +126,8 @@ export default defineComponent({
               "#": counter++,
               name: data.name,
               patterns: data.index_template.index_patterns.join(", "),
-              priority: data.index_template.priority,
-              content: data.index_template.template,
+              priority: data.index_template.priority || "",
+              template: data.index_template.template,
               updated: date.formatDate(
                 data["@timestamp"],
                 "YYYY-MM-DDTHH:mm:ssZ"
@@ -132,9 +142,14 @@ export default defineComponent({
 
     const template = ref({});
     const showAddTemplateDialog = ref(false);
+    const showUpdateTemplateDialog = ref(false);
 
     const addTemplate = () => {
       showAddTemplateDialog.value = true;
+    };
+    const editTemplate = (props) => {
+      template.value = props.row;
+      showUpdateTemplateDialog.value = true;
     };
     const deleteTemplate = (props) => {
       $q.dialog({
@@ -149,7 +164,7 @@ export default defineComponent({
       }).onOk(() => {
         axios
           .delete(
-            store.state.API_ENDPOINT + "es/_index_template/" + props.row.id
+            store.state.API_ENDPOINT + "es/_index_template/" + props.row.name
           )
           .then(() => {
             getTemplates();
@@ -158,8 +173,9 @@ export default defineComponent({
     };
 
     return {
-      template,
       showAddTemplateDialog,
+      showUpdateTemplateDialog,
+      template,
       templates,
       pagination: {
         rowsPerPage: 20,
@@ -176,9 +192,14 @@ export default defineComponent({
         return filtered;
       },
       addTemplate,
+      editTemplate,
       deleteTemplate,
       templateAdded() {
         showAddTemplateDialog.value = false;
+        getTemplates();
+      },
+      templateUpdated() {
+        showUpdateTemplateDialog.value = false;
         getTemplates();
       },
     };

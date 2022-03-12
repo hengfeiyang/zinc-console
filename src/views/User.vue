@@ -71,6 +71,7 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 import { useQuasar, date } from "quasar";
 import axios from "../axios";
 
@@ -83,30 +84,40 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const router = useRouter();
     const $q = useQuasar();
 
     const users = ref([]);
     const getUsers = () => {
-      axios.get(store.state.API_ENDPOINT + "api/users").then((response) => {
-        var counter = 1;
-        users.value = response.data.hits.hits.map((data) => {
-          return {
-            "#": counter++,
-            id: data._source._id,
-            name: data._source.name || data._source._id,
-            role: data._source.role,
-            created: date.formatDate(
-              data._source.created_at,
-              "YYYY-MM-DDTHH:mm:ssZ"
-            ),
-            updated: date.formatDate(
-              data._source["@timestamp"],
-              "YYYY-MM-DDTHH:mm:ssZ"
-            ),
-            actions: "",
-          };
+      axios
+        .get(store.state.API_ENDPOINT + "api/users")
+        .then((response) => {
+          var counter = 1;
+          users.value = response.data.hits.hits.map((data) => {
+            return {
+              "#": counter++,
+              id: data._source._id,
+              name: data._source.name || data._source._id,
+              role: data._source.role,
+              created: date.formatDate(
+                data._source.created_at,
+                "YYYY-MM-DDTHH:mm:ssZ"
+              ),
+              updated: date.formatDate(
+                data._source["@timestamp"],
+                "YYYY-MM-DDTHH:mm:ssZ"
+              ),
+              actions: "",
+            };
+          });
+        })
+        .catch((err) => {
+          if (err && err.response.status == 401) {
+            store.dispatch("logout");
+            localStorage.setItem("creds", "");
+            router.push("/login");
+          }
         });
-      });
     };
 
     getUsers();

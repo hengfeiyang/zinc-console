@@ -190,6 +190,16 @@ export default defineComponent({
             this.$emit("update:modelValue", data);
             this.$emit("updated", data);
             this.addUserForm.resetValidation();
+          })
+          .catch((err) => {
+            console.log(err, err.response);
+            this.$q.notify({
+              position: "top",
+              color: "red-5",
+              textColor: "white",
+              icon: "warning",
+              message: err.response.data.error,
+            });
           });
       });
     },

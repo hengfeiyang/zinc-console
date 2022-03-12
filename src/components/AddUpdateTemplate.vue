@@ -61,12 +61,11 @@
             <json-editor
               v-model="templateData.template.settings"
               name="settings"
-              :height="352"
+              :height="480"
               @validation-error="onJsonError"
-              @updated="onJsonUpdated"
             ></json-editor>
           </q-form>
-          <p class="text-grey">
+          <p class="text-grey q-mb-none">
             Use JSON format:
             <strong
               class="bg-grey-2 text-purple-6 q-px-sm"
@@ -81,12 +80,11 @@
             <json-editor
               v-model="templateData.template.mappings"
               name="mappings"
-              :height="352"
+              :height="480"
               @validation-error="onJsonError"
-              @updated="onJsonUpdated"
             ></json-editor>
           </q-form>
-          <p class="text-grey">
+          <p class="text-grey q-mb-none">
             Use JSON format:
             <strong
               class="bg-grey-2 text-purple-6 q-px-sm"
@@ -99,10 +97,10 @@
         <q-step :name="4" title="Review" icon="preview">
           <q-form ref="step4Form">
             <json-editor
-              v-model="templateData.template"
+              v-model="templateData"
               name="preview"
               mode="preview"
-              :height="360"
+              :height="488"
             ></json-editor>
           </q-form>
         </q-step>
@@ -133,9 +131,11 @@
 
 <script>
 import { defineComponent, ref } from "vue";
+import axios from "../axios";
+
 import JsonEditor from "../components/JsonEditor.vue";
 
-const defaultValue = {
+const defaultValue = () => ({
   name: "",
   index_patterns: [],
   priority: "",
@@ -143,7 +143,7 @@ const defaultValue = {
     settings: {},
     mappings: {},
   },
-};
+});
 
 export default defineComponent({
   name: "ComponentAddUpdateTemplate",
@@ -153,22 +153,24 @@ export default defineComponent({
   props: {
     modelValue: {
       type: Object,
-      default: () => defaultValue,
+      default: () => defaultValue(),
     },
   },
   emits: ["update:modelValue", "updated"],
   setup() {
     const beingUpdated = ref(false);
-    const roles = ref(["admin", "user"]);
     const step1Form = ref(null);
     const disableColor = ref("");
     const disableBtn = ref(false);
-    const templateData = ref(defaultValue);
+    const templateData = ref(defaultValue());
 
     return {
       step: ref(1),
+      step1Form,
       disableColor,
       disableBtn,
+      beingUpdated,
+      templateData,
       placeholderIndexSettings: ref(`{
   "analysis": {
     "analyzer": {
@@ -185,38 +187,19 @@ export default defineComponent({
     }
   }
 }`),
-      beingUpdated,
-      roles,
-      templateData,
-      step1Form,
-      json: ref(""),
-      onJsonError(error) {
-        if (error && error.length > 0) {
-          console.log("error", error);
-          disableBtn.value = true;
-        } else {
-          disableBtn.value = false;
-        }
-      },
-      onJsonUpdated(json) {
-        console.log("update", json);
-        templateData.value.settings = json;
-      },
     };
   },
   created() {
-    if (this.user && this.user.id) {
+    if (this.modelValue && this.modelValue.name) {
       this.beingUpdated = true;
       this.disableColor = "grey-5";
-      this.templateData = {
-        name: val.name,
-        index_patterns: val.index_patterns,
-        priority: val.priority,
-        template: {
-          settings: val.template.settings,
-          mappings: val.template.mappings,
-        },
-      };
+      for (const indexPattern of this.modelValue.patterns.split(", ")) {
+        this.templateData.index_patterns.push(indexPattern);
+      }
+      this.templateData.name = this.modelValue.name;
+      this.templateData.priority = this.modelValue.priority;
+      this.templateData.template.settings = this.modelValue.template.settings;
+      this.templateData.template.mappings = this.modelValue.template.mappings;
     }
   },
   methods: {
@@ -240,38 +223,60 @@ export default defineComponent({
       }
       return true;
     },
+    onJsonError(error) {
+      if (error && error.length > 0) {
+        this.disableBtn = true;
+      } else {
+        this.disableBtn = false;
+      }
+    },
     nextStep() {
       if (this.step === 1) {
         this.onSubmitStep1();
-        return false;
-      } else if (this.step === 2) {
-        // ss
-      } else if (this.step === 3) {
-        // ss
-      } else if (this.step === 4) {
-        // ss
+        return;
       }
 
       if (this.step < 4) {
         this.$refs.stepper.next();
         return;
       }
-      console.log("save", this.templateData);
-      this.$emit("update:modelValue", this.templateData);
-      this.$emit("updated", this.templateData);
+
+      // save template
+      this.onSave();
     },
     onSubmitStep1() {
       this.step1Form.validate().then((valid) => {
         if (!valid) {
-          console.log("Form is invalid");
           this.disableBtn = true;
-          return false;
+        } else {
+          this.$refs.stepper.next();
+          this.step1Form.resetValidation();
         }
-        console.log("Form is valid");
-        console.log(this.templateData);
-        this.$refs.stepper.next();
-        return true;
       });
+    },
+    onSave() {
+      axios
+        .put(
+          this.$store.state.API_ENDPOINT +
+            "es/_index_template/" +
+            this.templateData.name,
+          this.templateData
+        )
+        .then((response) => {
+          this.$emit("update:modelValue", this.templateData);
+          this.$emit("updated", this.templateData);
+          this.templateData = defaultValue();
+        })
+        .catch((err) => {
+          console.log(err, err.response);
+          this.$q.notify({
+            position: "top-right",
+            color: "red-5",
+            textColor: "white",
+            icon: "warning",
+            message: err.response.data.error,
+          });
+        });
     },
   },
 });

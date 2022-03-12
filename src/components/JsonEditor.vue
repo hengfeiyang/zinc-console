@@ -25,7 +25,7 @@ export default {
     },
     height: {
       type: Number,
-      default: 200,
+      default: 300,
     },
   },
   emits: ["update:modelValue", "error", "validationError"],
@@ -53,9 +53,12 @@ export default {
   mounted() {
     this.init();
   },
+  unmounted() {
+    this.jsonEditor?.destroy();
+    this.jsonEditor = null;
+  },
   methods: {
     init() {
-      console.log("init", this.name, this.mode);
       this.jsonEditor = new JSONEditor(
         this.$el.querySelector(".json-editor"),
         {
@@ -76,20 +79,31 @@ export default {
             this.$emit("validationError", err);
           },
           onChange: () => {
-            this.internalChange = true;
-            this.$emit("update:modelValue", this.jsonEditor.getText());
-            // prevent infinite loop
-            this.$nextTick(() => {
-              this.internalChange = false;
-            });
+            try {
+              this.internalChange = true;
+              this.$emit("update:modelValue", this.jsonEditor.get());
+              // prevent infinite loop
+              this.$nextTick(() => {
+                this.internalChange = false;
+              });
+            } catch (error) {}
           },
         },
         this.modelValue
       );
     },
-    setValue(val) {
-      if (this.jsonEditor) {
-        this.jsonEditor.set(val ? JSON.parse(val) : {});
+    setValue(json) {
+      if (!this.jsonEditor) {
+        return false;
+      }
+      if (!json) {
+        return false;
+      }
+      console.log("setValue.JSON", json);
+      if (typeof json == "object") {
+        this.jsonEditor.set(json);
+      } else {
+        this.jsonEditor.setText(json);
       }
     },
   },

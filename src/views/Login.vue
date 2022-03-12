@@ -99,6 +99,16 @@ export default defineComponent({
               store.dispatch("logout");
               submitting.value = false;
             }
+          })
+          .catch((err) => {
+            console.log(err, err.response);
+            $q.notify({
+              position: "top",
+              color: "red-5",
+              textColor: "white",
+              icon: "warning",
+              message: err.response.data.error,
+            });
           });
       }
     };
