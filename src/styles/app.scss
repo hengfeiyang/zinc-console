@@ -18,3 +18,12 @@
     min-width: 800px;
     width: 80vw;
 }
+
+.text-decoration-none {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.text-decoration-none:hover {
+    text-decoration: underline;
+}

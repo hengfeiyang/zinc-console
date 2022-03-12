@@ -133,7 +133,9 @@ export default {
   }
 }
 .jsoneditor-preview {
+  padding: 12px !important;
   background: rgba(0, 0, 0, 0.05);
+  line-height: 1.5;
   min-height: v-bind(minHeight);
 }
 .ace-jsoneditor,

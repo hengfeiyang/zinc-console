@@ -34,8 +34,18 @@
           {{ props.value }}
         </q-td>
       </template>
+      <template #body-cell-name="props">
+        <q-td :props="props" auto-width>
+          <a
+            class="text-primary text-decoration-none"
+            @click="previewTemplate(props)"
+          >
+            {{ props.value }}
+          </a>
+        </q-td>
+      </template>
       <template #body-cell-template="props">
-        <q-td :props="props" auto-width="">
+        <q-td :props="props" auto-width>
           <q-badge v-if="props.value.mappings">
             M <q-tooltip class="bg-black">Mappings</q-tooltip>
           </q-badge>
@@ -95,6 +105,15 @@
     >
       <add-update-template v-model="template" @updated="templateUpdated" />
     </q-dialog>
+
+    <q-dialog
+      v-model="showPreviewTemplateDialog"
+      position="right"
+      full-height
+      maximized
+    >
+      <preview-template v-model="template" />
+    </q-dialog>
   </q-page>
 </template>
 
@@ -105,11 +124,13 @@ import { useQuasar, date } from "quasar";
 import axios from "../axios";
 
 import AddUpdateTemplate from "../components/AddUpdateTemplate.vue";
+import PreviewTemplate from "../components/PreviewTemplate.vue";
 
 export default defineComponent({
   name: "PageTemplate",
   components: {
     AddUpdateTemplate,
+    PreviewTemplate,
   },
   setup() {
     const store = useStore();
@@ -143,6 +164,7 @@ export default defineComponent({
     const template = ref({});
     const showAddTemplateDialog = ref(false);
     const showUpdateTemplateDialog = ref(false);
+    const showPreviewTemplateDialog = ref(false);
 
     const addTemplate = () => {
       showAddTemplateDialog.value = true;
@@ -172,9 +194,15 @@ export default defineComponent({
       });
     };
 
+    const previewTemplate = (props) => {
+      template.value = props.row;
+      showPreviewTemplateDialog.value = true;
+    };
+
     return {
       showAddTemplateDialog,
       showUpdateTemplateDialog,
+      showPreviewTemplateDialog,
       template,
       templates,
       pagination: {
@@ -194,6 +222,7 @@ export default defineComponent({
       addTemplate,
       editTemplate,
       deleteTemplate,
+      previewTemplate,
       templateAdded() {
         showAddTemplateDialog.value = false;
         getTemplates();

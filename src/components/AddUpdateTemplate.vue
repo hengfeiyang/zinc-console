@@ -109,6 +109,7 @@
         <template #navigation>
           <q-stepper-navigation>
             <q-btn
+              no-caps
               color="primary"
               :disable="disableBtn"
               :label="step === 4 ? 'Save Template' : 'Continue'"
@@ -117,6 +118,7 @@
             <q-btn
               v-if="step > 1"
               flat
+              no-caps
               color="primary"
               :disable="disableBtn"
               label="Back"
