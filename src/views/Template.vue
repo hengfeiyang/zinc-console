@@ -149,10 +149,6 @@ export default defineComponent({
               patterns: data.index_template.index_patterns.join(", "),
               priority: data.index_template.priority || "",
               template: data.index_template.template,
-              updated: date.formatDate(
-                data["@timestamp"],
-                "YYYY-MM-DDTHH:mm:ssZ"
-              ),
               actions: "",
             };
           });
