@@ -107,7 +107,7 @@ export default defineComponent({
   props: {
     modelValue: {
       type: Object,
-      default: () => defaultValue(),
+      default: () => {},
     },
   },
   setup() {
@@ -118,7 +118,13 @@ export default defineComponent({
   },
   created() {
     if (this.modelValue && this.modelValue.name) {
-      this.templateData = this.modelValue;
+      this.templateData["name"] = this.modelValue.name;
+      this.templateData["patterns"] = this.modelValue.patterns;
+      this.templateData["priority"] = this.modelValue.priority;
+      this.templateData["template"] = {
+        settings: this.modelValue.template.settings || {},
+        mappings: this.modelValue.template.mappings || {},
+      };
     }
   },
 });
