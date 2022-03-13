@@ -41,7 +41,7 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
-import axios from "../axios";
+import aboutService from "../services/about";
 
 export default defineComponent({
   name: "PageAbout",
@@ -51,7 +51,7 @@ export default defineComponent({
 
     const version = ref({});
     const getVersion = () => {
-      axios.get(store.state.API_ENDPOINT + "version").then((response) => {
+      aboutService.get().then((response) => {
         version.value = response.data;
       });
     };

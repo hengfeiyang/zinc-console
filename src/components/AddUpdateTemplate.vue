@@ -134,7 +134,7 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import axios from "../axios";
+import templateService from "../services/template";
 
 import JsonEditor from "../components/JsonEditor.vue";
 
@@ -260,13 +260,8 @@ export default defineComponent({
       });
     },
     onSave() {
-      axios
-        .put(
-          this.$store.state.API_ENDPOINT +
-            "es/_index_template/" +
-            this.templateData.name,
-          this.templateData
-        )
+      templateService
+        .update(this.templateData)
         .then((response) => {
           this.$emit("update:modelValue", this.templateData);
           this.$emit("updated", this.templateData);

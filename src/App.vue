@@ -13,8 +13,7 @@ export default {
       store.dispatch(
         "endpoint",
         window.location.origin +
-          window.location.pathname.split("/").slice(0, -2).join("/") +
-          "/"
+          window.location.pathname.split("/").slice(0, -2).join("/")
       );
     }
 

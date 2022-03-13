@@ -102,8 +102,8 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
-import { useQuasar, date } from "quasar";
-import axios from "../axios";
+import { useQuasar } from "quasar";
+import indexService from "../services/index";
 
 import AddUpdateIndex from "../components/AddUpdateTemplate.vue";
 import PreviewIndex from "../components/PreviewTemplate.vue";
@@ -120,7 +120,7 @@ export default defineComponent({
 
     const indexes = ref([]);
     const getIndexes = () => {
-      axios.get(store.state.API_ENDPOINT + "api/index").then((response) => {
+      indexService.list().then((response) => {
         var counter = 1;
         indexes.value = response.data.map((data) => {
           return {
@@ -160,11 +160,9 @@ export default defineComponent({
         persistent: true,
         html: true,
       }).onOk(() => {
-        axios
-          .delete(store.state.API_ENDPOINT + "api/index/" + props.row.name)
-          .then(() => {
-            getIndexes();
-          });
+        indexService.delete(props.row.name).then(() => {
+          getIndexes();
+        });
       });
     };
 

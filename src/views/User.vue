@@ -71,9 +71,8 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
 import { useQuasar, date } from "quasar";
-import axios from "../axios";
+import userService from "../services/user";
 
 import AddUpdateUser from "../components/AddUpdateUser.vue";
 
@@ -84,45 +83,35 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    const router = useRouter();
     const $q = useQuasar();
 
+    const user = ref({});
     const users = ref([]);
     const getUsers = () => {
-      axios
-        .get(store.state.API_ENDPOINT + "api/users")
-        .then((response) => {
-          var counter = 1;
-          users.value = response.data.hits.hits.map((data) => {
-            return {
-              "#": counter++,
-              id: data._source._id,
-              name: data._source.name || data._source._id,
-              role: data._source.role,
-              created: date.formatDate(
-                data._source.created_at,
-                "YYYY-MM-DDTHH:mm:ssZ"
-              ),
-              updated: date.formatDate(
-                data._source["@timestamp"],
-                "YYYY-MM-DDTHH:mm:ssZ"
-              ),
-              actions: "",
-            };
-          });
-        })
-        .catch((err) => {
-          if (err && err.response.status == 401) {
-            store.dispatch("logout");
-            localStorage.setItem("creds", "");
-            router.push("/login");
-          }
+      userService.list().then((response) => {
+        var counter = 1;
+        users.value = response.data.hits.hits.map((data) => {
+          return {
+            "#": counter++,
+            id: data._source._id,
+            name: data._source.name || data._source._id,
+            role: data._source.role,
+            created: date.formatDate(
+              data._source.created_at,
+              "YYYY-MM-DDTHH:mm:ssZ"
+            ),
+            updated: date.formatDate(
+              data._source["@timestamp"],
+              "YYYY-MM-DDTHH:mm:ssZ"
+            ),
+            actions: "",
+          };
         });
+      });
     };
 
     getUsers();
 
-    const user = ref({});
     const showAddUserDialog = ref(false);
     const showUpdateUserDialog = ref(false);
 
@@ -148,11 +137,9 @@ export default defineComponent({
         persistent: true,
         html: true,
       }).onOk(() => {
-        axios
-          .delete(store.state.API_ENDPOINT + "api/user/" + props.row.id)
-          .then(() => {
-            getUsers();
-          });
+        userService.delete(props.row.id).then(() => {
+          getUsers();
+        });
       });
     };
 

@@ -84,14 +84,16 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import axios from "../axios";
+import userService from "../services/user";
 
-const defaultValue = {
-  _id: "",
-  name: "",
-  role: "",
-  password: "",
-  confirmPassword: "",
+const defaultValue = () => {
+  return {
+    _id: "",
+    name: "",
+    role: "",
+    password: "",
+    confirmPassword: "",
+  };
 };
 
 export default defineComponent({
@@ -99,7 +101,7 @@ export default defineComponent({
   props: {
     modelValue: {
       type: Object,
-      default: () => defaultValue,
+      default: () => defaultValue(),
     },
   },
   emits: ["update:modelValue", "updated"],
@@ -108,7 +110,7 @@ export default defineComponent({
     const roles = ref(["admin", "user"]);
     const addUserForm = ref(null);
     const disableColor = ref("");
-    const userData = ref(defaultValue);
+    const userData = ref(defaultValue());
 
     return {
       disableColor,
@@ -175,8 +177,8 @@ export default defineComponent({
           return false;
         }
         // console.log("Form is valid");
-        axios
-          .put(this.$store.state.API_ENDPOINT + "api/user", this.userData)
+        userService
+          .update(this.userData)
           .then((response) => {
             var data = response.data;
             this.userData = {

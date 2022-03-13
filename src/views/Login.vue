@@ -45,7 +45,7 @@ import { useStore } from "vuex";
 import { useQuasar } from "quasar";
 import { Buffer } from "buffer";
 import { useRouter } from "vue-router";
-import axios from "../axios";
+import authapi from "../services/auth";
 
 export default defineComponent({
   name: "PageLogin",
@@ -78,8 +78,8 @@ export default defineComponent({
           ),
         };
 
-        axios
-          .post(store.state.API_ENDPOINT + "api/login", creds)
+        authapi
+          .login(creds)
           .then((res) => {
             if (res.data.validated) {
               creds.name = res.data.user.name;
@@ -87,7 +87,7 @@ export default defineComponent({
 
               localStorage.setItem("creds", JSON.stringify(creds));
               store.dispatch("login", creds);
-              router.push({ path: "/search" });
+              router.replace({ path: "/search" });
             } else {
               $q.notify({
                 position: "top",

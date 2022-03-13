@@ -121,7 +121,7 @@
 import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import { useQuasar, date } from "quasar";
-import axios from "../axios";
+import templateService from "../services/template";
 
 import AddUpdateTemplate from "../components/AddUpdateTemplate.vue";
 import PreviewTemplate from "../components/PreviewTemplate.vue";
@@ -138,21 +138,19 @@ export default defineComponent({
 
     const templates = ref([]);
     const getTemplates = () => {
-      axios
-        .get(store.state.API_ENDPOINT + "es/_index_template")
-        .then((response) => {
-          var counter = 1;
-          templates.value = response.data.map((data) => {
-            return {
-              "#": counter++,
-              name: data.name,
-              patterns: data.index_template.index_patterns.join(", "),
-              priority: data.index_template.priority || "",
-              template: data.index_template.template,
-              actions: "",
-            };
-          });
+      templateService.list().then((response) => {
+        var counter = 1;
+        templates.value = response.data.map((data) => {
+          return {
+            "#": counter++,
+            name: data.name,
+            patterns: data.index_template.index_patterns.join(", "),
+            priority: data.index_template.priority || "",
+            template: data.index_template.template,
+            actions: "",
+          };
         });
+      });
     };
 
     getTemplates();
@@ -180,13 +178,9 @@ export default defineComponent({
         persistent: true,
         html: true,
       }).onOk(() => {
-        axios
-          .delete(
-            store.state.API_ENDPOINT + "es/_index_template/" + props.row.name
-          )
-          .then(() => {
-            getTemplates();
-          });
+        templateService.delete(props.row.name).then(() => {
+          getTemplates();
+        });
       });
     };
 

@@ -2,7 +2,7 @@ import { createStore } from "vuex";
 
 export default createStore({
   state: {
-    API_ENDPOINT: "http://localhost:4080/",
+    API_ENDPOINT: "http://localhost:4080",
     user: {
       isLoggedIn: false,
       _id: "",
