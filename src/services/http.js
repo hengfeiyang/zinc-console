@@ -1,8 +1,9 @@
 import store from "../store";
 import router from "../router";
 import axios from "axios";
+import { Notify } from "quasar";
 
-var http = () => {
+const http = () => {
   var instance = axios.create({
     // timeout: 10000,
     baseURL: store.state.API_ENDPOINT,
@@ -16,10 +17,41 @@ var http = () => {
       return response;
     },
     function (error) {
-      if (error.response.status === 401) {
-        store.dispatch("logout");
-        localStorage.setItem("creds", "");
-        router.replace({ name: "login" });
+      switch (error.response.status) {
+        case 400:
+          Notify.create({
+            position: "top",
+            color: "red-5",
+            textColor: "white",
+            icon: "warning",
+            message: error.response.data["error"] || "Bad Request",
+          });
+          break;
+        case 401:
+          store.dispatch("logout");
+          localStorage.setItem("creds", "");
+          router.replace({ name: "login" });
+          break;
+        case 404:
+          Notify.create({
+            position: "top",
+            color: "red-5",
+            textColor: "white",
+            icon: "warning",
+            message: error.response.data["error"] || "Not Found",
+          });
+          break;
+        case 500:
+          Notify.create({
+            position: "top",
+            color: "red-5",
+            textColor: "white",
+            icon: "warning",
+            message: error.response.data["error"] || "Internal ServerError",
+          });
+          break;
+        default:
+        // noop
       }
       return Promise.reject(error);
     }

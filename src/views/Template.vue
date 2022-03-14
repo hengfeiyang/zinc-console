@@ -138,9 +138,9 @@ export default defineComponent({
 
     const templates = ref([]);
     const getTemplates = () => {
-      templateService.list().then((response) => {
+      templateService.list().then((res) => {
         var counter = 1;
-        templates.value = response.data.map((data) => {
+        templates.value = res.data.map((data) => {
           return {
             "#": counter++,
             name: data.name,

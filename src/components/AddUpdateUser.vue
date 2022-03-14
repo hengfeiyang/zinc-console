@@ -177,32 +177,20 @@ export default defineComponent({
           return false;
         }
         // console.log("Form is valid");
-        userService
-          .update(this.userData)
-          .then((response) => {
-            var data = response.data;
-            this.userData = {
-              _id: "",
-              name: "",
-              password: "",
-              confirmPassword: "",
-              role: "",
-            };
+        userService.update(this.userData).then((res) => {
+          var data = res.data;
+          this.userData = {
+            _id: "",
+            name: "",
+            password: "",
+            confirmPassword: "",
+            role: "",
+          };
 
-            this.$emit("update:modelValue", data);
-            this.$emit("updated", data);
-            this.addUserForm.resetValidation();
-          })
-          .catch((err) => {
-            console.log(err, err.response);
-            this.$q.notify({
-              position: "top",
-              color: "red-5",
-              textColor: "white",
-              icon: "warning",
-              message: err.response.data.error,
-            });
-          });
+          this.$emit("update:modelValue", data);
+          this.$emit("updated", data);
+          this.addUserForm.resetValidation();
+        });
       });
     },
   },

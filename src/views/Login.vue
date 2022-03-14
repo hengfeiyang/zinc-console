@@ -78,38 +78,26 @@ export default defineComponent({
           ),
         };
 
-        authapi
-          .login(creds)
-          .then((res) => {
-            if (res.data.validated) {
-              creds.name = res.data.user.name;
-              creds.role = res.data.user.role;
+        authapi.login(creds).then((res) => {
+          if (res.data.validated) {
+            creds.name = res.data.user.name;
+            creds.role = res.data.user.role;
 
-              localStorage.setItem("creds", JSON.stringify(creds));
-              store.dispatch("login", creds);
-              router.replace({ path: "/search" });
-            } else {
-              $q.notify({
-                position: "top",
-                color: "red-5",
-                textColor: "white",
-                icon: "warning",
-                message: "Invalid credentials",
-              });
-              store.dispatch("logout");
-              submitting.value = false;
-            }
-          })
-          .catch((err) => {
-            console.log(err, err.response);
+            localStorage.setItem("creds", JSON.stringify(creds));
+            store.dispatch("login", creds);
+            router.replace({ path: "/search" });
+          } else {
             $q.notify({
               position: "top",
               color: "red-5",
               textColor: "white",
               icon: "warning",
-              message: err.response.data.error,
+              message: "Invalid credentials",
             });
-          });
+            store.dispatch("logout");
+            submitting.value = false;
+          }
+        });
       }
     };
 

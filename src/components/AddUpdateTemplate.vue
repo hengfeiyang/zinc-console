@@ -260,23 +260,11 @@ export default defineComponent({
       });
     },
     onSave() {
-      templateService
-        .update(this.templateData)
-        .then((response) => {
-          this.$emit("update:modelValue", this.templateData);
-          this.$emit("updated", this.templateData);
-          this.templateData = defaultValue();
-        })
-        .catch((err) => {
-          console.log(err, err.response);
-          this.$q.notify({
-            position: "top-right",
-            color: "red-5",
-            textColor: "white",
-            icon: "warning",
-            message: err.response.data.error,
-          });
-        });
+      templateService.update(this.templateData).then((res) => {
+        this.$emit("update:modelValue", this.templateData);
+        this.$emit("updated", this.templateData);
+        this.templateData = defaultValue();
+      });
     },
   },
 });

@@ -51,8 +51,8 @@ export default defineComponent({
 
     const version = ref({});
     const getVersion = () => {
-      aboutService.get().then((response) => {
-        version.value = response.data;
+      aboutService.get().then((res) => {
+        version.value = res.data;
       });
     };
     getVersion();

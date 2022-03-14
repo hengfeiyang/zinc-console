@@ -120,9 +120,9 @@ export default defineComponent({
 
     const indexes = ref([]);
     const getIndexes = () => {
-      indexService.list().then((response) => {
+      indexService.list().then((res) => {
         var counter = 1;
-        indexes.value = response.data.map((data) => {
+        indexes.value = res.data.map((data) => {
           return {
             "#": counter++,
             name: data.name,

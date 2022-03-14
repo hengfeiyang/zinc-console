@@ -88,9 +88,9 @@ export default defineComponent({
     const user = ref({});
     const users = ref([]);
     const getUsers = () => {
-      userService.list().then((response) => {
+      userService.list().then((res) => {
         var counter = 1;
-        users.value = response.data.hits.hits.map((data) => {
+        users.value = res.data.hits.hits.map((data) => {
           return {
             "#": counter++,
             id: data._source._id,
