@@ -20,7 +20,9 @@ const http = () => {
       switch (error.response.status) {
         case 400:
           Notify.create({
-            position: "top",
+            position: "bottom-right",
+            progress: true,
+            multiLine: true,
             color: "red-5",
             textColor: "white",
             icon: "warning",
@@ -28,13 +30,24 @@ const http = () => {
           });
           break;
         case 401:
+          Notify.create({
+            position: "bottom-right",
+            progress: true,
+            multiLine: true,
+            color: "red-5",
+            textColor: "white",
+            icon: "warning",
+            message: error.response.data["error"] || "Invalid credentials",
+          });
           store.dispatch("logout");
           localStorage.setItem("creds", "");
           router.replace({ name: "login" });
           break;
         case 404:
           Notify.create({
-            position: "top",
+            position: "bottom-right",
+            progress: true,
+            multiLine: true,
             color: "red-5",
             textColor: "white",
             icon: "warning",
@@ -43,7 +56,9 @@ const http = () => {
           break;
         case 500:
           Notify.create({
-            position: "top",
+            position: "bottom-right",
+            progress: true,
+            multiLine: true,
             color: "red-5",
             textColor: "white",
             icon: "warning",

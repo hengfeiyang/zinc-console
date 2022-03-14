@@ -88,7 +88,9 @@ export default defineComponent({
             router.replace({ path: "/search" });
           } else {
             $q.notify({
-              position: "top",
+              position: "bottom-right",
+              progress: true,
+              multiLine: true,
               color: "red-5",
               textColor: "white",
               icon: "warning",
