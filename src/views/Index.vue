@@ -79,16 +79,6 @@
     </q-dialog>
 
     <q-dialog
-      v-model="showUpdateIndexDialog"
-      position="right"
-      full-height
-      seamless
-      maximized
-    >
-      <add-update-index v-model="index" @updated="indexUpdated" />
-    </q-dialog>
-
-    <q-dialog
       v-model="showPreviewIndexDialog"
       position="right"
       full-height
@@ -105,8 +95,8 @@ import { useStore } from "vuex";
 import { useQuasar } from "quasar";
 import indexService from "../services/index";
 
-import AddUpdateIndex from "../components/AddUpdateTemplate.vue";
-import PreviewIndex from "../components/PreviewTemplate.vue";
+import AddUpdateIndex from "../components/AddUpdateIndex.vue";
+import PreviewIndex from "../components/PreviewIndex.vue";
 
 export default defineComponent({
   name: "PageIndex",
@@ -129,9 +119,13 @@ export default defineComponent({
             docs_count: data.docs_count,
             storage_size: data.storage_size,
             storage_type: data.storage_type,
-            actions: "",
+            actions: {
+              settings: data.settings,
+              mappings: data.mappings,
+            },
           };
         });
+        console.log(indexes.value);
       });
     };
 
@@ -139,21 +133,28 @@ export default defineComponent({
 
     const index = ref({});
     const showAddIndexDialog = ref(false);
-    const showUpdateIndexDialog = ref(false);
     const showPreviewIndexDialog = ref(false);
 
     const addIndex = () => {
       showAddIndexDialog.value = true;
     };
-    const editIndex = (props) => {
-      index.value = props.row;
-      showUpdateIndexDialog.value = true;
+    const previewIndex = (props) => {
+      index.value = {
+        name: props.row.name,
+        docs_count: props.row.docs_count,
+        storage_size: props.row.storage_size,
+        storage_type: props.row.storage_type,
+        settings: props.row.actions.settings,
+        mappings: props.row.actions.mappings,
+      };
+      console.log(index.value);
+      showPreviewIndexDialog.value = true;
     };
     const deleteIndex = (props) => {
       $q.dialog({
-        title: "Delete template",
+        title: "Delete index",
         message:
-          "You are about to delete this template: <ul><li>" +
+          "You are about to delete this index: <ul><li>" +
           props.row.name +
           "</li></ul>",
         cancel: true,
@@ -166,14 +167,8 @@ export default defineComponent({
       });
     };
 
-    const previewIndex = (props) => {
-      index.value = props.row;
-      showPreviewIndexDialog.value = true;
-    };
-
     return {
       showAddIndexDialog,
-      showUpdateIndexDialog,
       showPreviewIndexDialog,
       index,
       indexes,
@@ -192,15 +187,10 @@ export default defineComponent({
         return filtered;
       },
       addIndex,
-      editIndex,
       deleteIndex,
       previewIndex,
       indexAdded() {
         showAddIndexDialog.value = false;
-        getIndexes();
-      },
-      indexUpdated() {
-        showUpdateIndexDialog.value = false;
         getIndexes();
       },
     };

@@ -8,7 +8,7 @@ var index = {
     return http().put("/api/index/" + data.name, data);
   },
   delete: (name) => {
-    return http().delete("/api/inndex/" + name);
+    return http().delete("/api/index/" + name);
   },
 };
 
