@@ -47,15 +47,15 @@
               </div>
             </div>
             <div class="row items-center q-mb-md">
-              <div class="col-sm-3 col-12">Storage Type</div>
-              <div class="col-sm-9 col-12 q-mb-none q-pl-md q-pt-sm q-pb-sm">
-                {{ indexData.storage_type }}
-              </div>
-            </div>
-            <div class="row items-center q-mb-md">
               <div class="col-sm-3 col-12">Storage Size</div>
               <div class="col-sm-9 col-12 q-mb-none q-pl-md q-pt-sm q-pb-sm">
                 {{ indexData.storage_size }}
+              </div>
+            </div>
+            <div class="row items-center q-mb-md">
+              <div class="col-sm-3 col-12">Storage Type</div>
+              <div class="col-sm-9 col-12 q-mb-none q-pl-md q-pt-sm q-pb-sm">
+                {{ indexData.storage_type }}
               </div>
             </div>
           </div>
