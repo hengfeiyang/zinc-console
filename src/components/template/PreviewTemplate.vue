@@ -97,7 +97,7 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import JsonEditor from "./JsonEditor.vue";
+import JsonEditor from "../JsonEditor.vue";
 
 export default defineComponent({
   name: "PreviewTemplate",

@@ -119,9 +119,8 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import indexService from "../services/index";
-
-import JsonEditor from "../components/JsonEditor.vue";
+import indexService from "../../services/index";
+import JsonEditor from "../JsonEditor.vue";
 
 const defaultValue = () => ({
   name: "",

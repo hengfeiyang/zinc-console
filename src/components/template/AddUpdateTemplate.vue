@@ -134,9 +134,8 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import templateService from "../services/template";
-
-import JsonEditor from "../components/JsonEditor.vue";
+import templateService from "../../services/template";
+import JsonEditor from "../JsonEditor.vue";
 
 const defaultValue = () => ({
   name: "",

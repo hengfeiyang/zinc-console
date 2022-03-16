@@ -95,8 +95,8 @@ import { useStore } from "vuex";
 import { useQuasar } from "quasar";
 import indexService from "../services/index";
 
-import AddUpdateIndex from "../components/AddUpdateIndex.vue";
-import PreviewIndex from "../components/PreviewIndex.vue";
+import AddUpdateIndex from "../components/index/AddUpdateIndex.vue";
+import PreviewIndex from "../components/index/PreviewIndex.vue";
 
 export default defineComponent({
   name: "PageIndex",

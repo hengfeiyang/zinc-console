@@ -84,7 +84,7 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import userService from "../services/user";
+import userService from "../../services/user";
 
 const defaultValue = () => {
   return {

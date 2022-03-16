@@ -74,7 +74,7 @@ import { useStore } from "vuex";
 import { useQuasar, date } from "quasar";
 import userService from "../services/user";
 
-import AddUpdateUser from "../components/AddUpdateUser.vue";
+import AddUpdateUser from "../components/user/AddUpdateUser.vue";
 
 export default defineComponent({
   name: "PageUser",

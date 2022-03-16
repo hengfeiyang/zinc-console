@@ -123,8 +123,8 @@ import { useStore } from "vuex";
 import { useQuasar, date } from "quasar";
 import templateService from "../services/template";
 
-import AddUpdateTemplate from "../components/AddUpdateTemplate.vue";
-import PreviewTemplate from "../components/PreviewTemplate.vue";
+import AddUpdateTemplate from "../components/template/AddUpdateTemplate.vue";
+import PreviewTemplate from "../components/template/PreviewTemplate.vue";
 
 export default defineComponent({
   name: "PageTemplate",
