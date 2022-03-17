@@ -1,10 +1,10 @@
 <template>
   <q-page class="q-pa-md">
     <div class="column">
-      <div>First column</div>
+      <search-bar />
       <div class="row">
-        <div>First column</div>
-        <div>Second column</div>
+        <index-menu />
+        <search-list />
       </div>
     </div>
   </q-page>
@@ -13,7 +13,16 @@
 <script>
 import { defineComponent } from "vue";
 
+import SearchBar from "../components/search/SearchBar.vue";
+import IndexMenu from "../components/search/IndexMenu.vue";
+import SearchList from "../components/search/SearchList.vue";
+
 export default defineComponent({
   name: "PageSearch",
+  components: {
+    SearchBar,
+    IndexMenu,
+    SearchList,
+  },
 });
 </script>

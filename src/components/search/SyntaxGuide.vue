@@ -1,12 +1,19 @@
 <template>
-  <q-btn outline class="syntax-menu-button" color="secondary" icon="info">
+  <q-btn
+    size="md"
+    unelevated
+    class="q-pa-sm syntax-menu-button"
+    color="grey-4"
+    text-color="grey-7"
+    icon="info"
+  >
     <q-menu>
-      <q-card>
+      <q-card flat>
         <q-card-section class="syntax-guide-title">
-          <div>Syntax guide</div>
+          <div class="text-h6">Syntax guide</div>
         </q-card-section>
-        <!-- <q-separator /> -->
-        <div class="answers">
+        <q-separator />
+        <q-card-section class="q-pt-none answers">
           <div class="syntax-section">
             <div class="syntax-guide-sub-title">Search for Gold</div>
             <div class="syntax-guide-text">Gold</div>
@@ -50,7 +57,7 @@
             </div>
             <div class="syntax-guide-text">par*</div>
           </div>
-        </div>
+        </q-card-section>
       </q-card>
     </q-menu>
   </q-btn>
@@ -63,29 +70,20 @@
 }
 
 .syntax-menu-button {
-  width: 50px;
-  height: 40px;
-  margin-top: 10px;
-  margin-right: 10px;
+  border-radius: 0 4px 4px 0;
 }
 
 .syntax-guide-title {
-  /* font-family: "Roboto Mono", Consolas, Menlo, Courier, monospace; */
   width: 500px;
-  font-size: 20px;
-  background-color: rgb(207, 203, 203);
 }
 
 .syntax-guide-sub-title {
-  /* font-family: "Roboto Mono", Consolas, Menlo, Courier, monospace; */
-  color: green;
-  /* font-weight: bold; */
+  color: $primary;
   font-size: 15px;
   margin-left: 5px;
 }
 
 .syntax-guide-text {
-  font-family: "Roboto Mono", Consolas, Menlo, Courier, monospace;
   font-size: 12px;
   margin-left: 5px;
 }

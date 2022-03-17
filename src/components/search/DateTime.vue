@@ -1,14 +1,17 @@
 <template>
-  <div icon="info" class="date-time-selector">
+  <div icon="info" class="justify-between">
     <q-btn
       outline
+      no-caps
       :label="displayValue"
+      align="between"
       icon-right="schedule"
-      class="date-time-button"
+      class="q-pa-sm date-time-button"
+      color="grey-9"
     >
     </q-btn>
     <q-menu class="date-time-dialog">
-      <q-tabs dense v-model="message.tab" class="text-teal">
+      <q-tabs v-model="message.tab" dense class="text-primary">
         <q-tab name="relative" label="relative"> </q-tab>
         <q-tab name="absolute" label="absolute"> </q-tab>
       </q-tabs>
@@ -19,354 +22,86 @@
             <tbody>
               <tr>
                 <td class="relative-period-name">Minutes</td>
-                <td>
+                <td v-for="item in relativePeriodList['Minutes']" :key="item">
                   <q-btn
                     :class="
                       message.selectedRelativePeriod == 'Minutes' &&
-                      message.selectedRelativeValue == 5
+                      message.selectedRelativeValue == item
                         ? 'rp-selector-selected'
                         : 'rp-selector'
                     "
-                    label="5"
-                    @click="selectRelativeValue('Minutes', 5)"
+                    :label="item"
                     outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Minutes' &&
-                      message.selectedRelativeValue == 10
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="10"
-                    @click="selectRelativeValue('Minutes', 10)"
-                    outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Minutes' &&
-                      message.selectedRelativeValue == 15
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="15"
-                    @click="selectRelativeValue('Minutes', 15)"
-                    outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Minutes' &&
-                      message.selectedRelativeValue == 30
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="30"
-                    @click="selectRelativeValue('Minutes', 30)"
-                    outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Minutes' &&
-                      message.selectedRelativeValue == 45
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="45"
-                    @click="selectRelativeValue('Minutes', 45)"
-                    outline
+                    dense
+                    @click="selectRelativeValue('Minutes', item)"
                   />
                 </td>
               </tr>
               <tr>
                 <td class="relative-period-name">Hours</td>
-                <td>
+                <td v-for="item in relativePeriodList['Hours']" :key="item">
                   <q-btn
                     :class="
                       message.selectedRelativePeriod == 'Hours' &&
-                      message.selectedRelativeValue == 1
+                      message.selectedRelativeValue == item
                         ? 'rp-selector-selected'
                         : 'rp-selector'
                     "
-                    label="1"
-                    @click="selectRelativeValue('Hours', 1)"
+                    :label="item"
                     outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Hours' &&
-                      message.selectedRelativeValue == 2
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="2"
-                    @click="selectRelativeValue('Hours', 2)"
-                    outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Hours' &&
-                      message.selectedRelativeValue == 3
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="3"
-                    @click="selectRelativeValue('Hours', 3)"
-                    outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Hours' &&
-                      message.selectedRelativeValue == 6
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="6"
-                    @click="selectRelativeValue('Hours', 6)"
-                    outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Hours' &&
-                      message.selectedRelativeValue == 8
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="8"
-                    @click="selectRelativeValue('Hours', 8)"
-                    outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Hours' &&
-                      message.selectedRelativeValue == 12
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="12"
-                    @click="selectRelativeValue('Hours', 12)"
-                    outline
+                    dense
+                    @click="selectRelativeValue('Hours', item)"
                   />
                 </td>
               </tr>
               <tr>
                 <td class="relative-period-name">Days</td>
-                <td>
+                <td v-for="item in relativePeriodList['Days']" :key="item">
                   <q-btn
                     :class="
                       message.selectedRelativePeriod == 'Days' &&
-                      message.selectedRelativeValue == 1
+                      message.selectedRelativeValue == item
                         ? 'rp-selector-selected'
                         : 'rp-selector'
                     "
-                    label="1"
-                    @click="selectRelativeValue('Days', 1)"
+                    :label="item"
                     outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Days' &&
-                      message.selectedRelativeValue == 2
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="2"
-                    @click="selectRelativeValue('Days', 2)"
-                    outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Days' &&
-                      message.selectedRelativeValue == 3
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="3"
-                    @click="selectRelativeValue('Days', 3)"
-                    outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Days' &&
-                      message.selectedRelativeValue == 4
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="4"
-                    @click="selectRelativeValue('Days', 4)"
-                    outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Days' &&
-                      message.selectedRelativeValue == 5
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="5"
-                    @click="selectRelativeValue('Days', 5)"
-                    outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Days' &&
-                      message.selectedRelativeValue == 6
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="6"
-                    @click="selectRelativeValue('Days', 6)"
-                    outline
+                    dense
+                    @click="selectRelativeValue('Days', item)"
                   />
                 </td>
               </tr>
               <tr>
                 <td class="relative-period-name">Weeks</td>
-                <td>
+                <td v-for="item in relativePeriodList['Weeks']" :key="item">
                   <q-btn
                     :class="
                       message.selectedRelativePeriod == 'Weeks' &&
-                      message.selectedRelativeValue == 1
+                      message.selectedRelativeValue == item
                         ? 'rp-selector-selected'
                         : 'rp-selector'
                     "
-                    label="1"
-                    @click="selectRelativeValue('Weeks', 1)"
+                    :label="item"
                     outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Weeks' &&
-                      message.selectedRelativeValue == 2
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="2"
-                    @click="selectRelativeValue('Weeks', 2)"
-                    outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Weeks' &&
-                      message.selectedRelativeValue == 3
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="3"
-                    @click="selectRelativeValue('Weeks', 3)"
-                    outline
+                    dense
+                    @click="selectRelativeValue('Weeks', item)"
                   />
                 </td>
               </tr>
               <tr>
                 <td class="relative-period-name">Months</td>
-                <td>
+                <td v-for="item in relativePeriodList['Months']" :key="item">
                   <q-btn
                     :class="
                       message.selectedRelativePeriod == 'Months' &&
-                      message.selectedRelativeValue == 1
+                      message.selectedRelativeValue == item
                         ? 'rp-selector-selected'
                         : 'rp-selector'
                     "
-                    label="1"
-                    @click="selectRelativeValue('Months', 1)"
+                    :label="item"
                     outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Months' &&
-                      message.selectedRelativeValue == 2
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="2"
-                    @click="selectRelativeValue('Months', 2)"
-                    outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Months' &&
-                      message.selectedRelativeValue == 3
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="3"
-                    @click="selectRelativeValue('Months', 3)"
-                    outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Months' &&
-                      message.selectedRelativeValue == 4
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="4"
-                    @click="selectRelativeValue('Months', 4)"
-                    outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Months' &&
-                      message.selectedRelativeValue == 5
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="5"
-                    @click="selectRelativeValue('Months', 5)"
-                    outline
-                  />
-                </td>
-                <td>
-                  <q-btn
-                    :class="
-                      message.selectedRelativePeriod == 'Months' &&
-                      message.selectedRelativeValue == 6
-                        ? 'rp-selector-selected'
-                        : 'rp-selector'
-                    "
-                    label="6"
-                    @click="selectRelativeValue('Months', 6)"
-                    outline
+                    dense
+                    @click="selectRelativeValue('Months', item)"
                   />
                 </td>
               </tr>
@@ -374,11 +109,11 @@
                 <td class="relative-period-name">Custom</td>
                 <td colspan="3" class="custom-relative">
                   <q-input
+                    v-model="message.selectedRelativeValue"
                     type="number"
                     style="text-align: right"
                     dense
                     filled
-                    v-model="message.selectedRelativeValue"
                   ></q-input>
                 </td>
                 <td colspan="3">
@@ -410,13 +145,13 @@
               <tr>
                 <td>
                   <q-input
+                    v-model="message.startDate"
                     dense
                     filled
-                    v-model="message.startDate"
                     mask="date"
                     :rules="['date']"
                   >
-                    <template v-slot:append>
+                    <template #append>
                       <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy
                           ref="qDateProxy"
@@ -440,13 +175,13 @@
                 </td>
                 <td class="absolute-period-name">
                   <q-input
+                    v-model="message.endDate"
                     dense
                     filled
-                    v-model="message.endDate"
                     mask="date"
                     :rules="['date']"
                   >
-                    <template v-slot:append>
+                    <template #append>
                       <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy
                           ref="qDateProxy"
@@ -476,13 +211,13 @@
               <tr>
                 <td class="absolute-period-name">
                   <q-input
+                    v-model="message.startTime"
                     dense
                     filled
-                    v-model="message.startTime"
                     mask="time"
                     :rules="['time']"
                   >
-                    <template v-slot:append>
+                    <template #append>
                       <q-icon name="access_time" class="cursor-pointer">
                         <q-popup-proxy
                           transition-show="scale"
@@ -505,13 +240,13 @@
                 </td>
                 <td class="absolute-period-name">
                   <q-input
+                    v-model="message.endTime"
                     dense
                     filled
-                    v-model="message.endTime"
                     mask="time"
                     :rules="['time']"
                   >
-                    <template v-slot:append>
+                    <template #append>
                       <q-icon name="access_time" class="cursor-pointer">
                         <q-popup-proxy
                           transition-show="scale"
@@ -559,18 +294,7 @@ export default {
       }),
     },
   },
-  computed: {
-    displayValue() {
-      if (this.message.selectedFullTime) {
-        return "FullTime";
-      }
-      if (this.message.tab === "relative") {
-        return `${this.message.selectedRelativeValue} ${this.message.selectedRelativePeriod}`;
-      } else {
-        return `${this.message.startDate} ${this.message.startTime} - ${this.message.endDate} ${this.message.endTime}`;
-      }
-    },
-  },
+  emits: ["update:modelValue"],
   setup(props, { emit }) {
     const message = computed({
       get: () => props.modelValue,
@@ -584,96 +308,75 @@ export default {
       "Weeks",
       "Months",
     ]);
+    const relativePeriodList = {
+      Minutes: [1, 5, 10, 15, 30, 45],
+      Hours: [1, 2, 3, 6, 8, 12],
+      Days: [1, 2, 3, 4, 5, 6],
+      Weeks: [1, 2, 3],
+      Months: [1, 2, 3, 4, 5, 6],
+    };
 
     return {
       message,
       relativePeriods,
-
+      relativePeriodList,
       selectRelativeValue(period, value) {
         this.message.selectedRelativeValue = value;
         this.message.selectedRelativePeriod = period;
       },
     };
   },
+  computed: {
+    displayValue() {
+      if (this.message.selectedFullTime) {
+        return "FullTime";
+      }
+      if (this.message.tab === "relative") {
+        return `${this.message.selectedRelativeValue} ${this.message.selectedRelativePeriod}`;
+      } else {
+        return `${this.message.startDate} ${this.message.startTime} - ${this.message.endDate} ${this.message.endTime}`;
+      }
+    },
+  },
 };
 </script>
 
-<style scoped>
-.date-time-selector {
-  /* display: flex; */
-  /* align-items: center; */
-  justify-content: space-between;
-  margin-top: 10px;
-  margin-right: 10px;
-  height: 50px;
-}
-
+<style lang="scss">
 .date-time-button {
-  /* display: block; */
-  vertical-align: middle;
-  text-align: center;
-  height: 40px;
-  width: 100%;
-}
-
-.relative-period {
-  display: flex;
-  flex-direction: row;
-  /* justify-content: space-between; */
-  align-items: center;
-  height: 50px;
-  width: 450px;
-  margin-left: 10px;
-  border: brown;
-}
-
-.rp-selector {
-  height: 40px;
-  width: 50px;
-  margin-left: 10px;
-  margin-bottom: 5px;
-  border: brown;
-}
-
-.rp-selector-selected {
-  height: 40px;
-  width: 50px;
-  margin-left: 10px;
-  margin-bottom: 5px;
-  color: rgb(224, 64, 64);
-  font-weight: bolder;
-  /* font-style: oblique; */
-  font-size: 1.5em;
-
-  /* font-family: fantasy; */
-}
-
-.relative-period-name {
-  width: 50px;
-  margin-left: 10px;
-}
-
-.relative-period-table {
-  margin: 10px;
-}
-
-.custom-relative {
-  /* display: flex; */
-  /* flex-direction: row; */
-  justify-content: space-between;
-  align-items: center;
-  height: 50px;
-  /* width: 450px; */
-  margin-left: 10px;
-  /* border: brown; */
+  min-width: 138px;
 }
 
 .date-time-dialog {
-  width: 600px;
+  width: 410px;
+}
+
+.rp-selector,
+.rp-selector-selected {
+  height: 32px;
+  width: 35px;
+  margin-left: 5px;
+  margin-bottom: 5px;
+  border: $secondary;
+}
+
+.rp-selector-selected {
+  color: $secondary;
+  font-weight: bolder;
+}
+
+.relative-period-name {
+  width: 35px;
+  margin-left: 10px;
+}
+
+.custom-relative {
+  justify-content: space-between;
+  align-items: center;
+  height: 35px;
+  margin-left: 10px;
 }
 
 .absolute-period-name {
-  /* width: 50px; */
   margin: 20px;
 }
 </style>
