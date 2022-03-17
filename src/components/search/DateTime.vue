@@ -18,7 +18,7 @@
 
       <q-tab-panels v-model="message.tab" animated>
         <q-tab-panel name="relative">
-          <table class="relative-period-table">
+          <table class="date-time-table">
             <tbody>
               <tr>
                 <td class="relative-period-name">Minutes</td>
@@ -107,40 +107,42 @@
               </tr>
               <tr>
                 <td class="relative-period-name">Custom</td>
-                <td colspan="3" class="custom-relative">
-                  <q-input
-                    v-model="message.selectedRelativeValue"
-                    type="number"
-                    style="text-align: right"
-                    dense
-                    filled
-                  ></q-input>
-                </td>
-                <td colspan="3">
-                  <q-select
-                    v-model="message.selectedRelativePeriod"
-                    :options="relativePeriods"
-                    dense
-                    filled
-                  ></q-select>
+                <td colspan="6">
+                  <div class="row q-gutter-sm">
+                    <div class="col">
+                      <q-input
+                        v-model="message.selectedRelativeValue"
+                        type="number"
+                        dense
+                        filled
+                      ></q-input>
+                    </div>
+                    <div class="col">
+                      <q-select
+                        v-model="message.selectedRelativePeriod"
+                        :options="relativePeriods"
+                        dense
+                        filled
+                      ></q-select>
+                    </div>
+                  </div>
                 </td>
               </tr>
               <tr>
                 <td class="relative-period-name">FullTime</td>
-                <td colspan="3" class="custom-relative">
+                <td colspan="6">
                   <q-toggle v-model="message.selectedFullTime" color="green" />
                 </td>
-                <td colspan="3"></td>
               </tr>
             </tbody>
           </table>
         </q-tab-panel>
         <q-tab-panel name="absolute">
-          <table>
+          <table class="date-time-table">
             <tbody>
               <tr>
-                <td class="absolute-period-name">Start Date</td>
-                <td class="absolute-period-name">End Date</td>
+                <td>Start Date</td>
+                <td>End Date</td>
               </tr>
               <tr>
                 <td>
@@ -173,7 +175,7 @@
                     </template>
                   </q-input>
                 </td>
-                <td class="absolute-period-name">
+                <td>
                   <q-input
                     v-model="message.endDate"
                     dense
@@ -205,11 +207,11 @@
                 </td>
               </tr>
               <tr>
-                <td class="absolute-period-name">Start Time</td>
-                <td class="absolute-period-name">End Time</td>
+                <td>Start Time</td>
+                <td>End Time</td>
               </tr>
               <tr>
-                <td class="absolute-period-name">
+                <td>
                   <q-input
                     v-model="message.startTime"
                     dense
@@ -238,7 +240,7 @@
                     </template>
                   </q-input>
                 </td>
-                <td class="absolute-period-name">
+                <td>
                   <q-input
                     v-model="message.endTime"
                     dense
@@ -347,36 +349,29 @@ export default {
 }
 
 .date-time-dialog {
-  width: 410px;
+  width: 370px;
+}
+.date-time-table {
+  width: 100%;
+}
+
+.date-time-table td {
+  padding: 0 2px 6px 2px;
+}
+
+.relative-period-name {
+  width: 35px;
 }
 
 .rp-selector,
 .rp-selector-selected {
   height: 32px;
   width: 35px;
-  margin-left: 5px;
-  margin-bottom: 5px;
   border: $secondary;
 }
 
 .rp-selector-selected {
   color: $secondary;
   font-weight: bolder;
-}
-
-.relative-period-name {
-  width: 35px;
-  margin-left: 10px;
-}
-
-.custom-relative {
-  justify-content: space-between;
-  align-items: center;
-  height: 35px;
-  margin-left: 10px;
-}
-
-.absolute-period-name {
-  margin: 20px;
 }
 </style>
