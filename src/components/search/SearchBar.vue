@@ -9,6 +9,8 @@
           filled
           type="search"
           class="search-field"
+          @change="searchData"
+          @keycode.enter="searchData"
         >
           <template #prepend>
             <q-icon name="search" />
@@ -26,7 +28,7 @@
           label=""
           :icon="refreshIcon"
           class="q-pa-sm"
-          @click="reSearch"
+          @click="searchData"
         />
         <q-btn-dropdown
           color="primary"
@@ -67,16 +69,21 @@ export default defineComponent({
     SyntaxGuide,
   },
   setup() {
+    const searching = ref(false);
     const searchQuery = ref("");
     const refreshIcon = ref("refresh");
     const refreshTime = ref("Off");
     const refreshTimeChange = (time) => {
       refreshTime.value = time;
-      refreshIcon.value = "search";
     };
-    const reSearch = (val) => {
+    const searchData = (val) => {
+      if (searching.value) {
+        return;
+      }
       refreshIcon.value = "refresh";
-      console.log("research", val);
+      searching.value = true;
+      console.log("searchData", val);
+      searching.value = false;
     };
 
     const dateVal = ref({
@@ -94,13 +101,15 @@ export default defineComponent({
 
     // when the datetime filter changes then update the results
     watch(dateVal.value, () => {
+      refreshIcon.value = "search";
       if (searchQuery.value.length > 0) {
-        reSearch("querystring");
+        searchData("querystring");
       } else {
-        reSearch("alldocuments");
+        searchData("alldocuments");
       }
     });
     return {
+      searching,
       searchQuery,
       dateVal,
       refreshIcon,
@@ -120,7 +129,7 @@ export default defineComponent({
         "1d",
       ],
       refreshTimeChange,
-      reSearch,
+      searchData,
     };
   },
 });
