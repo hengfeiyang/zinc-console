@@ -109,7 +109,6 @@ export default {
       if (!json) {
         return false;
       }
-      console.log("setValue.JSON", json);
       if (typeof json == "object") {
         this.jsonEditor.set(json);
       } else {

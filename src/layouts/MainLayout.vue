@@ -57,7 +57,20 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component
+            :is="Component"
+            v-if="$route.meta.keepAlive"
+            :key="$route.name"
+          />
+        </keep-alive>
+        <component
+          :is="Component"
+          v-if="!$route.meta.keepAlive"
+          :key="$route.name"
+        />
+      </router-view>
     </q-page-container>
   </q-layout>
 </template>

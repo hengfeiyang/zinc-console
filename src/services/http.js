@@ -26,7 +26,9 @@ const http = () => {
             color: "red-5",
             textColor: "white",
             icon: "warning",
-            message: error.response.data["error"] || "Bad Request",
+            message: JSON.stringify(
+              error.response.data["error"] || "Bad Request"
+            ),
           });
           break;
         case 401:
@@ -62,7 +64,9 @@ const http = () => {
             color: "red-5",
             textColor: "white",
             icon: "warning",
-            message: error.response.data["error"] || "Internal ServerError",
+            message: JSON.stringify(
+              error.response.data["error"] || "Internal ServerError"
+            ),
           });
           break;
         default:

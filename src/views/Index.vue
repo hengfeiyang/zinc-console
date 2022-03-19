@@ -125,7 +125,6 @@ export default defineComponent({
             },
           };
         });
-        console.log(indexes.value);
       });
     };
 
@@ -147,7 +146,6 @@ export default defineComponent({
         settings: props.row.actions.settings,
         mappings: props.row.actions.mappings,
       };
-      console.log(index.value);
       showPreviewIndexDialog.value = true;
     };
     const deleteIndex = (props) => {

@@ -106,10 +106,101 @@ export default defineComponent({
     const resultCount = ref("");
     const resultColumns = ref(defaultColumns());
 
+    // get the normalized date and time from the dateVal object
+    const getDateConsumableDateTime = function (dateVal) {
+      if (dateVal.tab == "relative") {
+        var period = "";
+        var periodValue = 0;
+
+        // quasar does not support arithmetic on weeks. convert to days.
+        if (dateVal.selectedRelativePeriod.toLowerCase() == "weeks") {
+          period = "days";
+          periodValue = dateVal.selectedRelativeValue * 7;
+        } else {
+          period = dateVal.selectedRelativePeriod.toLowerCase();
+          periodValue = dateVal.selectedRelativeValue;
+        }
+        var subtractObject = '{"' + period + '":' + periodValue + "}";
+
+        var endTimeStamp = new Date();
+        var startTimeStamp = date.subtractFromDate(
+          endTimeStamp,
+          JSON.parse(subtractObject)
+        );
+
+        return {
+          start_time: startTimeStamp,
+          end_time: endTimeStamp,
+        };
+      } else {
+        var start, end;
+
+        if (dateVal.startDate == "" && dateVal.startTime == "") {
+          start = new Date();
+        } else {
+          start = new Date(dateVal.startDate + " " + dateVal.startTime);
+        }
+
+        if (dateVal.endDate == "" && dateVal.endTime == "") {
+          end = new Date();
+        } else {
+          end = new Date(dateVal.endDate + " " + dateVal.endTime);
+        }
+
+        var rVal = {
+          start_time: start,
+          end_time: end,
+        };
+        return rVal;
+      }
+    };
+
+    const buildSearch = (queryData) => {
+      var req = {
+        query: {
+          bool: {
+            must: [],
+          },
+        },
+        sort: ["-@timestamp"],
+        size: 100,
+      };
+
+      var timestamps = getDateConsumableDateTime(queryData.time);
+      if (timestamps.start_time || timestamps.end_time) {
+        if (!queryData.time.selectedFullTime) {
+          req.query.bool.must.push({
+            range: {
+              "@timestamp": {
+                gte: timestamps.start_time.toISOString(),
+                lt: timestamps.end_time.toISOString(),
+              },
+            },
+          });
+        }
+      }
+
+      if (queryData.query == "") {
+        req.query.bool.must.push({
+          match_all: {},
+        });
+        return req;
+      }
+
+      req.query.bool.must.push({
+        query_string: {
+          query: queryData.query,
+        },
+      });
+
+      return req;
+    };
+
     let lastIndexName = "";
     const searchData = (indexData, queryData) => {
+      const query = buildSearch(queryData);
       searchService
-        .search({ index: indexData.name, query: { query: { match_all: {} } } })
+        .search({ index: indexData.name, query: query })
         .then((res) => {
           if (lastIndexName != "" && lastIndexName != indexData.name) {
             resetColumns(indexData);

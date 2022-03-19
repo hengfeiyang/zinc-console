@@ -24,16 +24,25 @@ const routes = [
         path: "search",
         name: "search",
         component: Search,
+        meta: {
+          keepAlive: true,
+        },
       },
       {
         path: "index",
         name: "index",
         component: Index,
+        meta: {
+          keepAlive: true,
+        },
       },
       {
         path: "template",
         name: "template",
         component: Template,
+        meta: {
+          keepAlive: true,
+        },
       },
       {
         path: "user",

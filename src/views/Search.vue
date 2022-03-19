@@ -35,7 +35,16 @@ export default defineComponent({
     });
     const queryData = ref({
       query: "",
-      time: {},
+      time: {
+        tab: "relative",
+        startDate: "",
+        startTime: "",
+        endDate: "",
+        endTime: "",
+        selectedRelativePeriod: "Minutes",
+        selectedRelativeValue: 30,
+        selectedFullTime: false,
+      },
     });
 
     const searchList = ref(null);
