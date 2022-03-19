@@ -100,6 +100,9 @@ export default defineComponent({
       selectedFields.value = [];
       indexFields.value = [];
       for (var k in mappingList.value[index.value]) {
+        if (k == "_id" || k == "@timestamp") {
+          continue;
+        }
         indexFields.value.push({ name: k });
       }
 

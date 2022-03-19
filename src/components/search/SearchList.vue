@@ -6,10 +6,11 @@
         v-model:expanded="searchResult._source"
         :rows="searchResult"
         :columns="resultColumns"
+        :loading="searchLoading"
+        :pagination="pagination"
         wrap-cells
         title="Search Results"
         row-key="_id"
-        :pagination="pagination"
       >
         <template #top-right>
           <div class="text-subtitle1">{{ resultCount }}</div>
@@ -163,6 +164,7 @@ export default defineComponent({
           },
         },
         sort: ["-@timestamp"],
+        form: 0,
         size: 100,
       };
 
@@ -196,8 +198,18 @@ export default defineComponent({
       return req;
     };
 
+    const pagination = ref({
+      rowsPerPage: 20,
+      // rowsNumber: 100,
+    });
+
     let lastIndexName = "";
+    const searchLoading = ref(false);
     const searchData = (indexData, queryData) => {
+      if (searchLoading.value) {
+        return false;
+      }
+      searchLoading.value = true;
       const query = buildSearch(queryData);
       searchService
         .search({ index: indexData.name, query: query })
@@ -220,6 +232,7 @@ export default defineComponent({
               " records in " +
               res.data.took +
               " milliseconds";
+            searchLoading.value = false;
           });
         });
     };
@@ -253,9 +266,8 @@ export default defineComponent({
       resultColumns,
       searchResult,
       resultCount,
-      pagination: {
-        rowsPerPage: 20,
-      },
+      searchLoading,
+      pagination,
     };
   },
 });

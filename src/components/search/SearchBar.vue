@@ -39,14 +39,14 @@
           <q-list>
             <q-item
               v-for="item in refreshTimes"
-              :key="item"
+              :key="item.value"
               v-close-popup
               dense
               clickable
               @click="refreshTimeChange(item)"
             >
               <q-item-section>
-                <q-item-label>{{ item }}</q-item-label>
+                <q-item-label>{{ item.label }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -80,21 +80,34 @@ export default defineComponent({
     const refreshIcon = ref("refresh");
     const refreshTime = ref("Off");
     const refreshTimes = [
-      "Off",
-      "5s",
-      "10s",
-      "15s",
-      "30s",
-      "1m",
-      "5m",
-      "15m",
-      "30m",
-      "1h",
-      "2h",
-      "1d",
+      { label: "Off", value: 0 },
+      { label: "5s", value: 5 },
+      { label: "10s", value: 10 },
+      { label: "15s", value: 15 },
+      { label: "30s", value: 30 },
+      { label: "1m", value: 60 },
+      { label: "5m", value: 300 },
+      { label: "15m", value: 900 },
+      { label: "30m", value: 1800 },
+      { label: "1h", value: 3600 },
+      { label: "2h", value: 7200 },
+      { label: "1d", value: 86400 },
     ];
+
+    const refreshTimer = ref(null);
     const refreshTimeChange = (time) => {
-      refreshTime.value = time;
+      refreshTime.value = time.label;
+      if (time.value === 0) {
+        clearInterval(refreshTimer.value);
+        refreshTimer.value = null;
+      } else {
+        if (refreshTimer.value != null) {
+          clearInterval(refreshTimer.value);
+        }
+        refreshTimer.value = setInterval(() => {
+          emit("refresh", "");
+        }, time.value * 1000);
+      }
     };
 
     const searchQuery = ref(props.data.query);
@@ -114,11 +127,7 @@ export default defineComponent({
     // when the datetime filter changes then update the results
     watch(dateVal.value, () => {
       refreshIcon.value = "search";
-      if (searchQuery.value.length > 0) {
-        searchData("querystring");
-      } else {
-        searchData("alldocuments");
-      }
+      searchData();
     });
 
     const searchData = () => {
@@ -143,9 +152,14 @@ export default defineComponent({
       refreshIcon,
       refreshTime,
       refreshTimes,
+      refreshTimer,
       refreshTimeChange,
       searchData,
     };
+  },
+  beforeUnmount() {
+    clearInterval(this.refreshTimer);
+    this.refreshTimer = null;
   },
 });
 </script>
