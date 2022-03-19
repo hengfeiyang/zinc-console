@@ -7,7 +7,7 @@
         @refresh="searchData"
       />
       <div class="row">
-        <index-menu :data="indexData" @updated="indexUpdated" />
+        <index-list :data="indexData" @updated="indexUpdated" />
         <search-list ref="searchList" />
       </div>
     </div>
@@ -18,20 +18,20 @@
 import { defineComponent, ref } from "vue";
 
 import SearchBar from "../components/search/SearchBar.vue";
-import IndexMenu from "../components/search/IndexMenu.vue";
+import IndexList from "../components/search/IndexList.vue";
 import SearchList from "../components/search/SearchList.vue";
 
 export default defineComponent({
   name: "PageSearch",
   components: {
     SearchBar,
-    IndexMenu,
+    IndexList,
     SearchList,
   },
   setup() {
     const indexData = ref({
       name: "",
-      column: [],
+      columns: [],
     });
     const queryData = ref({
       query: "",
@@ -43,9 +43,10 @@ export default defineComponent({
       searchList.value.searchData(indexData.value, queryData.value);
     };
 
-    const indexUpdated = (name, column) => {
+    const indexUpdated = ({ name, columns }) => {
       indexData.value.name = name;
-      indexData.value.column = column;
+      indexData.value.columns = columns;
+      queryData.value.query = "";
       searchData();
     };
     const queryUpdated = ({ query, time }) => {

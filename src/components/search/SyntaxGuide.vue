@@ -52,8 +52,7 @@
           </div>
           <div class="syntax-section">
             <div class="syntax-guide-sub-title">
-              Search text starting with par . e.g. Paris, Parthenon, Part,
-              Paramater
+              Search text starting with par . e.g. Paris, Part, Paramater
             </div>
             <div class="syntax-guide-text">par*</div>
           </div>
@@ -74,7 +73,7 @@
 }
 
 .syntax-guide-title {
-  width: 500px;
+  width: 420px;
 }
 
 .syntax-guide-sub-title {
