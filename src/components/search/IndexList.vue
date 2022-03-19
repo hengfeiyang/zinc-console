@@ -68,8 +68,9 @@ export default defineComponent({
   },
   emits: ["updated"],
   setup(props, { emit }) {
-    const selectedIndex = ref(props.data.name);
-    const selectedFields = ref(props.data.columns);
+    const getIndexData = (field) => props.data[field];
+    const selectedIndex = ref(getIndexData("name"));
+    const selectedFields = ref(getIndexData("columns"));
     const indexList = ref([]);
     const indexFields = ref([]);
     const mappingList = ref({});
@@ -104,7 +105,7 @@ export default defineComponent({
 
       emit("updated", {
         name: index.value,
-        columns: selectedFields.value.map((v) => v.name),
+        columns: [],
       });
     };
 
@@ -129,13 +130,13 @@ export default defineComponent({
         selectedFields.value.push(row);
       }
       emit("updated", {
-        name: selectedIndex.value,
+        name: selectedIndex.value.value,
         columns: selectedFields.value.map((v) => v.name),
       });
     };
     const selectedFieldFn = () => {
       emit("updated", {
-        name: selectedIndex.value,
+        name: selectedIndex.value.value,
         columns: selectedFields.value.map((v) => v.name),
       });
     };

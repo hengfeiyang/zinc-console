@@ -42,12 +42,20 @@ export default defineComponent({
     const searchData = () => {
       searchList.value.searchData(indexData.value, queryData.value);
     };
+    const resetColumns = () => {
+      searchList.value.resetColumns(indexData.value);
+    };
 
     const indexUpdated = ({ name, columns }) => {
-      indexData.value.name = name;
-      indexData.value.columns = columns;
-      queryData.value.query = "";
-      searchData();
+      if (indexData.value.name != name) {
+        indexData.value.name = name;
+        indexData.value.columns = columns;
+        queryData.value.query = "";
+        searchData();
+      } else {
+        indexData.value.columns = columns;
+        resetColumns();
+      }
     };
     const queryUpdated = ({ query, time }) => {
       queryData.value.query = query;
