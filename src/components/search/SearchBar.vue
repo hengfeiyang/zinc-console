@@ -4,7 +4,7 @@
       <div class="col">
         <q-input
           v-model="searchQuery"
-          label="Type your search query here"
+          placeholder="Type your search query here"
           dense
           filled
           type="search"
@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import { defineComponent, watch, ref } from "vue";
+import { defineComponent, nextTick, watch, ref } from "vue";
 
 import DateTime from "./DateTime.vue";
 import SyntaxGuide from "./SyntaxGuide.vue";
@@ -68,27 +68,39 @@ export default defineComponent({
     DateTime,
     SyntaxGuide,
   },
-  setup() {
+  props: {
+    data: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
+  emits: ["updated", "refresh"],
+  setup(props, { emit }) {
     const searching = ref(false);
-    const searchQuery = ref("");
     const refreshIcon = ref("refresh");
     const refreshTime = ref("Off");
+    const refreshTimes = [
+      "Off",
+      "5s",
+      "10s",
+      "15s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d",
+    ];
     const refreshTimeChange = (time) => {
       refreshTime.value = time;
     };
-    const searchData = (val) => {
-      if (searching.value) {
-        return;
-      }
-      refreshIcon.value = "refresh";
-      searching.value = true;
-      console.log("searchData", val);
-      searching.value = false;
-    };
+
+    const searchQuery = ref(props.data.query);
 
     const dateVal = ref({
       tab: "relative",
-
       startDate: "",
       startTime: "",
       endDate: "",
@@ -108,26 +120,29 @@ export default defineComponent({
         searchData("alldocuments");
       }
     });
+
+    const searchData = () => {
+      if (searching.value) {
+        return;
+      }
+      refreshIcon.value = "refresh";
+      searching.value = true;
+      emit("updated", {
+        query: searchQuery.value,
+        time: dateVal.value,
+      });
+      nextTick(() => {
+        searching.value = false;
+      });
+    };
+
     return {
       searching,
       searchQuery,
       dateVal,
       refreshIcon,
       refreshTime,
-      refreshTimes: [
-        "Off",
-        "5s",
-        "10s",
-        "15s",
-        "30s",
-        "1m",
-        "5m",
-        "15m",
-        "30m",
-        "1h",
-        "2h",
-        "1d",
-      ],
+      refreshTimes,
       refreshTimeChange,
       searchData,
     };
