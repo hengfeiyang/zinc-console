@@ -7,9 +7,10 @@
         filled
         dense
         use-input
+        input-debounce="0"
         label="Select Index"
         behavior="menu"
-        class="q-my-md"
+        class="q-mt-md q-mb-sm"
         @filter="filterFn"
         @update:model-value="selectFn"
       >
@@ -20,7 +21,36 @@
         </template>
       </q-select>
     </div>
-    <div>index table</div>
+    <div>
+      <q-table
+        v-model:selected="selectedFields"
+        :rows="indexFields"
+        row-key="name"
+        :filter="filterField"
+        :filter-method="filterFieldFn"
+        dense
+        hide-header
+        hide-bottom
+        selection="multiple"
+        @row-click="clickFieldFn"
+        @update:selected="selectedFieldFn"
+      >
+        <template #top-right>
+          <q-input
+            v-model="filterField"
+            filled
+            borderless
+            dense
+            debounce="1"
+            placeholder="Search for a field"
+          >
+            <template #append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
+      </q-table>
+    </div>
   </div>
 </template>
 
@@ -41,10 +71,11 @@ export default defineComponent({
     const selectedIndex = ref(props.data.name);
     const selectedFields = ref(props.data.columns);
     const indexList = ref([]);
+    const indexFields = ref([]);
     const mappingList = ref({});
     const options = ref([]);
 
-    // filter the values when value is being typed in index field
+    // index operation
     const filterFn = (val, update) => {
       if (val === "") {
         update(() => {
@@ -55,23 +86,57 @@ export default defineComponent({
 
       update(() => {
         const needle = val.toLowerCase();
-        options.value = indexList.value.filter(
-          (v) => v.value.toLowerCase().indexOf(needle) > -1
+        options.value = indexList.value.filter((v) =>
+          v.value.toLowerCase().includes(needle)
         );
       });
     };
 
     const selectFn = (index) => {
+      if (!index || !index.value) {
+        return;
+      }
       selectedFields.value = [];
+      indexFields.value = [];
       for (var k in mappingList.value[index.value]) {
-        if (k != "_id") {
-          selectedFields.value.push({});
-        }
+        indexFields.value.push({ name: k });
       }
 
       emit("updated", {
         name: index.value,
-        columns: selectedFields.value,
+        columns: selectedFields.value.map((v) => v.name),
+      });
+    };
+
+    // fields operation
+    const filterField = ref("");
+    const filterFieldFn = (rows, terms) => {
+      var filtered = [];
+      terms = terms.toLowerCase();
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i]["name"].toLowerCase().includes(terms)) {
+          filtered.push(rows[i]);
+        }
+      }
+      return filtered;
+    };
+    const clickFieldFn = (evt, row, index) => {
+      if (selectedFields.value.includes(row)) {
+        selectedFields.value = selectedFields.value.filter(
+          (v) => v.name !== row.name
+        );
+      } else {
+        selectedFields.value.push(row);
+      }
+      emit("updated", {
+        name: selectedIndex.value,
+        columns: selectedFields.value.map((v) => v.name),
+      });
+    };
+    const selectedFieldFn = () => {
+      emit("updated", {
+        name: selectedIndex.value,
+        columns: selectedFields.value.map((v) => v.name),
       });
     };
 
@@ -83,7 +148,9 @@ export default defineComponent({
             label: item.name,
             value: item.name,
           });
-          mappingList.value[item.name] = item.mappingns;
+          mappingList.value[item.name] = item.mappings
+            ? item.mappings.properties
+            : [];
         });
         selectedIndex.value = indexList.value[0];
         selectFn(selectedIndex.value);
@@ -99,6 +166,11 @@ export default defineComponent({
       options,
       filterFn,
       selectFn,
+      indexFields,
+      filterField,
+      filterFieldFn,
+      clickFieldFn,
+      selectedFieldFn,
     };
   },
 });
